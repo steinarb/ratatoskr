@@ -61,6 +61,7 @@ public class LocalizationResource extends ResourceBase {
         return ratatoskr.availableLocales();
     }
 
+    @SuppressWarnings("resource")
     @GET
     @Path("displaytexts")
     @Produces(MediaType.APPLICATION_JSON)
