@@ -15,11 +15,17 @@
  */
 package no.priv.bang.ratatoskr.asvocabulary;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 public sealed interface IntransitiveActivity extends ActivityStreamObject permits Activity, Arrive, Question, Travel {
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject actor();
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject target();
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject origin();
     LinkOrObject location();
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject result();
 
 }

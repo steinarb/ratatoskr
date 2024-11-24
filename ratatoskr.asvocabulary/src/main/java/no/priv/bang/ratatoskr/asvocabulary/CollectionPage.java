@@ -55,7 +55,6 @@ public record CollectionPage(
     Collection replies,
     LinkOrObject tag,
     int totalItems,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     List<LinkOrObject> items,
     LinkOrObject current,
     LinkOrObject first,

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record Note(
     @JsonGetter("@context") Object context,
@@ -34,14 +33,12 @@ public record Note(
     Map<String, String> contentMap,
     String mediaType,
     List<Link> url,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject attributedTo,
     String duration,
     ZonedDateTime startTime,
     ZonedDateTime endTime,
     ZonedDateTime published,
     ZonedDateTime updated,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject attachment,
     LinkOrObject audience,
     LinkOrObject to,
@@ -49,16 +46,12 @@ public record Note(
     LinkOrObject bto,
     LinkOrObject cc,
     LinkOrObject generator,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject icon,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject image,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject inReplyTo,
     LinkOrObject location,
     LinkOrObject preview,
     Collection replies,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject tag
 ) implements ActivityStreamObject
 {

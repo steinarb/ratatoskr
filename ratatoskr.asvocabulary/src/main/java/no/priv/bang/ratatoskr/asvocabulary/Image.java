@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record Image(
     @JsonGetter("@context") Object context,
@@ -33,9 +32,7 @@ public record Image(
     String content,
     Map<String, String> contentMap,
     String mediaType,
-    @JsonDeserialize(converter = StringAndLinkToLinkListConverter.class)
     List<Link> url,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject attributedTo,
     String duration,
     ZonedDateTime startTime,
@@ -55,7 +52,6 @@ public record Image(
     LinkOrObject location,
     LinkOrObject preview,
     Collection replies,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject tag,
     int width, // Not in spec for Image but in example 79
     int height // Not in spec for Image but in example 79

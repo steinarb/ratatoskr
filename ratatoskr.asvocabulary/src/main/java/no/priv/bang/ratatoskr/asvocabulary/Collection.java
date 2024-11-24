@@ -16,11 +16,16 @@
 package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.util.List;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public sealed interface Collection extends ActivityStreamObject permits CollectionPage, CollectionRecord, OrderedCollection {
     int totalItems();
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     List<LinkOrObject> items();
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject current(); // actually just CollectionPage or Link, but hard to do
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject first(); // actually just CollectionPage or Link, but hard to do
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject last(); // actually just CollectionPage or Link, but hard to do
 }

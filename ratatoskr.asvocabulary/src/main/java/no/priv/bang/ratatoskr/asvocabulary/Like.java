@@ -21,7 +21,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record Like(
     @JsonProperty("@context") @JsonAlias("context") Object context,
@@ -43,7 +42,6 @@ public record Like(
     ZonedDateTime updated,
     LinkOrObject attachment,
     LinkOrObject audience,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject to,
     LinkOrObject bcc,
     LinkOrObject bto,
@@ -56,11 +54,9 @@ public record Like(
     LinkOrObject preview,
     Collection replies,
     LinkOrObject tag,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject actor,
     LinkOrObject target,
     LinkOrObject origin,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject object,
     LinkOrObject instrument,
     LinkOrObject result

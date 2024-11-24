@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record CollectionRecord(
     @JsonGetter("@context") Object context,
@@ -55,13 +54,9 @@ public record CollectionRecord(
     Collection replies,
     LinkOrObject tag,
     int totalItems,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     List<LinkOrObject> items,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject current,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject first,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject last
 ) implements Collection
 {

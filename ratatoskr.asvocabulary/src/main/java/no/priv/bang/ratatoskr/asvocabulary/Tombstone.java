@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record Tombstone(
     @JsonGetter("@context") Object context,
@@ -33,7 +32,6 @@ public record Tombstone(
     String content,
     Map<String, String> contentMap,
     String mediaType,
-    @JsonDeserialize(converter = StringAndLinkToLinkListConverter.class)
     List<Link> url,
     LinkOrObject attributedTo,
     String duration,

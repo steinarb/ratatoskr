@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record Article(
     @JsonGetter("@context") Object context,
@@ -34,7 +33,6 @@ public record Article(
     Map<String, String> contentMap,
     String mediaType,
     List<Link> url,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject attributedTo,
     String duration,
     ZonedDateTime startTime,

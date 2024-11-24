@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record Block(
     @JsonGetter("@context") Object context,
@@ -54,11 +53,9 @@ public record Block(
     LinkOrObject preview,
     Collection replies,
     LinkOrObject tag,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject actor,
     LinkOrObject target,
     LinkOrObject origin,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject object,
     LinkOrObject instrument,
     LinkOrObject result

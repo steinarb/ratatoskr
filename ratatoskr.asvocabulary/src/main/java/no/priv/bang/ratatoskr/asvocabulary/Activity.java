@@ -15,7 +15,10 @@
  */
 package no.priv.bang.ratatoskr.asvocabulary;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 public sealed interface Activity extends IntransitiveActivity permits Accept, ActivityRecord, Add, Announce, Create, Delete, Follow, Ignore, Join, Leave, Like, Listen, Offer, Move, Read, Reject, Remove, Undo, Update, View, Flag, Dislike {
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject object();
     LinkOrObject instrument();
 }

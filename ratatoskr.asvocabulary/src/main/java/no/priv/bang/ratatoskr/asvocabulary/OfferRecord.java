@@ -21,7 +21,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record OfferRecord(
     @JsonProperty("@context") @JsonAlias("context") Object context,
@@ -43,13 +42,9 @@ public record OfferRecord(
     ZonedDateTime updated,
     LinkOrObject attachment,
     LinkOrObject audience,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject to,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject bcc,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject bto,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject cc,
     LinkOrObject generator,
     LinkOrObject icon,
@@ -59,12 +54,9 @@ public record OfferRecord(
     LinkOrObject preview,
     Collection replies,
     LinkOrObject tag,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject actor,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject target,
     LinkOrObject origin,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject object,
     LinkOrObject instrument,
     LinkOrObject result
