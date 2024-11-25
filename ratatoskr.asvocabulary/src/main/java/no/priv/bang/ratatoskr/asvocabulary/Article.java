@@ -19,10 +19,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-
 public record Article(
-    @JsonGetter("@context") Object context,
+    Object context,
     ActivityStreamObjectType type,
     String id,
     String name,

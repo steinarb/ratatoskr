@@ -17,10 +17,8 @@ package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-
 public record Mention(
-    @JsonGetter("@context") Object context,
+    Object context,
     ActivityStreamObjectType type,
     String href,
     List<String> rel,

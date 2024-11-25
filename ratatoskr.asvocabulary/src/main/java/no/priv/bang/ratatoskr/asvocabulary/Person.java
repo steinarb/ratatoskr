@@ -20,13 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public record Person(
-    @JsonGetter("@context") Object context,
+    Object context,
     ActivityStreamObjectType type,
     String id,
     String name,

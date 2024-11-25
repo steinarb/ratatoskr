@@ -16,6 +16,8 @@
 package no.priv.bang.ratatoskr.asvocabulary;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -78,7 +80,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public sealed interface LinkOrObject permits Link, ActivityStreamObject, UntypedObject, LinkOrObjectList {
 
-    public Object context();
+    @JsonGetter("@context") @JsonAlias("context") public Object context();
     @JsonDeserialize(converter = ListToActivityStreamObjectTypeConverter.class)
     public ActivityStreamObjectType type();
 

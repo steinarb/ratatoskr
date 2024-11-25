@@ -15,11 +15,10 @@
  */
 package no.priv.bang.ratatoskr.asvocabulary;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record UntypedObject(
-    @JsonGetter("@context") Object context,
+    Object context,
     ActivityStreamObjectType type,
     String name,
     String id,

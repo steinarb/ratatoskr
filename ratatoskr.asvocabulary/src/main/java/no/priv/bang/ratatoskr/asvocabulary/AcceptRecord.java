@@ -19,11 +19,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonGetter;
-
 public record AcceptRecord(
-    @JsonGetter("@context") @JsonAlias("context") Object context,
+    Object context,
     ActivityStreamObjectType type,
     String id,
     String name,

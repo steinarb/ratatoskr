@@ -19,11 +19,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record CollectionPage(
-    @JsonGetter("@context") Object context,
+    Object context,
     ActivityStreamObjectType type,
     String id,
     String name,
