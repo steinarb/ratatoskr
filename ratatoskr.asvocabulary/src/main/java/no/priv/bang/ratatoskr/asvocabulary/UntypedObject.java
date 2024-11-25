@@ -15,22 +15,47 @@
  */
 package no.priv.bang.ratatoskr.asvocabulary;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
 
 public record UntypedObject(
-    Object context,
-    ActivityStreamObjectType type,
-    String name,
-    String id,
-    String summary,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
-    LinkOrObject actor,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
-    LinkOrObject object,
-    LinkOrObject result,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
-    LinkOrObject inReplyTo,
-    @JsonDeserialize(converter = StringToLinkConverter.class)
-    LinkOrObject attributedTo
-) implements LinkOrObject {
+        Object context,
+        ActivityStreamObjectType type,
+        String id,
+        String name,
+        Map<String, String> nameMap,
+        String summary,
+        Map<String, String> summaryMap,
+        String content,
+        Map<String, String> contentMap,
+        String mediaType,
+        List<Link> url,
+        LinkOrObject attributedTo,
+        String duration,
+        ZonedDateTime startTime,
+        ZonedDateTime endTime,
+        ZonedDateTime published,
+        ZonedDateTime updated,
+        LinkOrObject attachment,
+        LinkOrObject audience,
+        LinkOrObject to,
+        LinkOrObject bcc,
+        LinkOrObject bto,
+        LinkOrObject cc,
+        LinkOrObject generator,
+        LinkOrObject icon,
+        LinkOrObject image,
+        LinkOrObject inReplyTo,
+        LinkOrObject location,
+        LinkOrObject preview,
+        Collection replies,
+        LinkOrObject tag,
+        LinkOrObject actor,
+        LinkOrObject target,
+        LinkOrObject origin,
+        LinkOrObject object,
+        LinkOrObject instrument,
+        LinkOrObject result
+) implements Activity {
 }

@@ -495,7 +495,7 @@ public class ParseTest {
                     default -> fail("Did not get the expected type for offer.actor");
                 }
                 switch (offer.object()) {
-                    case UntypedObject untyped -> assertThat(untyped.name()).isEqualTo("50% Off!");
+                    case ActivityStreamObject untyped -> assertThat(untyped.name()).isEqualTo("50% Off!");
                     default -> fail("Did not get the expected type for offer.object");
                 }
                 switch (offer.target()) {
@@ -626,7 +626,7 @@ public class ParseTest {
             case Remove remove -> {
                 assertThat(remove.summary()).isEqualTo("The moderator removed Sally from a group");
                 switch (remove.actor()) {
-                    case UntypedObject untyped -> assertThat(untyped.name()).isEqualTo("The Moderator");
+                    case ActivityStreamObject untyped -> assertThat(untyped.name()).isEqualTo("The Moderator");
                     default -> fail("Did not get the expected type for remove.actor");
                 }
                 switch (remove.object()) {
@@ -1176,7 +1176,7 @@ public class ParseTest {
     void testParseExample061() throws Exception {
         LinkOrObject object = mapper.readValue(activityStreamsExample("example_061.json"), LinkOrObject.class);
         switch(object) {
-            case UntypedObject untypedObject -> {
+            case ActivityStreamObject untypedObject -> {
                 assertThat(untypedObject.name()).isEqualTo("Foo");
                 assertThat(untypedObject.id()).isEqualTo("http://example.org/foo");
             }
@@ -1189,7 +1189,7 @@ public class ParseTest {
         // Non-standard type property
         LinkOrObject object = mapper.readValue(activityStreamsExample("example_062.json"), LinkOrObject.class);
         switch(object) {
-            case UntypedObject untypedObject -> {
+            case ActivityStreamObject untypedObject -> {
                 assertThat(untypedObject.summary()).isEqualTo("A foo");
             }
             default -> fail("Did not get the expected type when parsing");
@@ -1322,7 +1322,7 @@ public class ParseTest {
                 assertThat(note.name()).isEqualTo("Holiday announcement");
                 assertThat(note.content()).isEqualTo("Thursday will be a company-wide holiday. Enjoy your day off!");
                 switch(note.audience()) {
-                    case UntypedObject audience -> assertThat(audience.name()).isEqualTo("ExampleCo LLC");
+                    case ActivityStreamObject audience -> assertThat(audience.name()).isEqualTo("ExampleCo LLC");
                     default -> fail("did not get the expected type for note.audience");
                 }
             }
@@ -2140,7 +2140,7 @@ public class ParseTest {
         // Non-standard type property, see example_103_a for what this example was intende to test, ie. property "Activity.resource"
         LinkOrObject object = mapper.readValue(activityStreamsExample("example_103.json"), LinkOrObject.class);
         switch(object) {
-            case UntypedObject untyped -> {
+            case Activity untyped -> {
                 assertThat(untyped.summary()).isEqualTo("Sally checked that her flight was on time");
                 switch(untyped.actor()) {
                     case Link link -> assertThat(link.href()).isEqualTo("http://sally.example.org");
@@ -2151,7 +2151,7 @@ public class ParseTest {
                     default -> fail("Did not get the expected type for untyped.object");
                 }
                 switch(untyped.result()) {
-                    case UntypedObject untyped1 -> assertThat(untyped1.name()).isEqualTo("On Time");
+                    case ActivityStreamObject untyped1 -> assertThat(untyped1.name()).isEqualTo("On Time");
                     default -> fail("Did not get the expected type for untyped.result");
                 }
             }
@@ -2176,7 +2176,7 @@ public class ParseTest {
                 }
                 switch(activity.result()) {
                     // This property has an object but also with a weird type attribute
-                    case UntypedObject untyped -> assertThat(untyped.name()).isEqualTo("On Time");
+                    case ActivityStreamObject untyped -> assertThat(untyped.name()).isEqualTo("On Time");
                     default -> fail("Did not get the expected type for activity.result");
                 }
             }
@@ -3186,11 +3186,11 @@ public class ParseTest {
                 assertThat(question.content()).isEqualTo("I'd like to build a robot to feed my cat. Which platform is best?");
                 assertThat(question.oneOf()).hasSize(2);
                 switch(question.oneOf().get(0)) {
-                    case UntypedObject asobject -> assertThat(asobject.name()).isEqualTo("arduino");
+                    case ActivityStreamObject asobject -> assertThat(asobject.name()).isEqualTo("arduino");
                     default -> fail("Did not get the expected type for question.oneOf[0]");
                 }
                 switch(question.oneOf().get(1)) {
-                    case UntypedObject asobject -> assertThat(asobject.name()).isEqualTo("raspberry pi");
+                    case ActivityStreamObject asobject -> assertThat(asobject.name()).isEqualTo("raspberry pi");
                     default -> fail("Did not get the expected type for question.oneOf[1]");
                 }
             }
@@ -3202,7 +3202,7 @@ public class ParseTest {
     void testParseExample153() throws Exception {
         LinkOrObject object = mapper.readValue(activityStreamsExample("example_153.json"), LinkOrObject.class);
         switch(object) {
-            case UntypedObject asobject -> {
+            case ActivityStreamObject asobject -> {
                 switch (asobject.attributedTo()) {
                     case Link link -> assertThat(link.href()).isEqualTo("http://sally.example.org");
                     default -> fail("Did not get the expected type for asobject.attributedTo");
@@ -3228,11 +3228,11 @@ public class ParseTest {
                 switch(question.oneOf()) {
                     case LinkOrObjectList list -> {
                         switch(list.get(0)) {
-                            case UntypedObject asobject -> assertThat(asobject.name()).isEqualTo("arduino");
+                            case ActivityStreamObject asobject -> assertThat(asobject.name()).isEqualTo("arduino");
                             default -> fail("Did not get the expected type for list[0]");
                         }
                         switch(list.get(1)) {
-                            case UntypedObject asobject -> assertThat(asobject.name()).isEqualTo("raspberry pi");
+                            case ActivityStreamObject asobject -> assertThat(asobject.name()).isEqualTo("raspberry pi");
                             default -> fail("Did not get the expected type for list[1]");
                         }
                     }
@@ -3241,7 +3241,7 @@ public class ParseTest {
                 assertThat(question.replies().totalItems()).isEqualTo(3);
                 assertThat(question.replies().items()).hasSize(3);
                 switch(question.replies().items().get(0)) {
-                    case UntypedObject asobject -> {
+                    case ActivityStreamObject asobject -> {
                         switch(asobject.attributedTo()) {
                             case Link link -> assertThat(link.href()).isEqualTo("http://sally.example.org");
                             default -> fail("Did not get the expected type for question.items[0].attributedTo");
@@ -3255,7 +3255,7 @@ public class ParseTest {
                     default -> fail("Did not get the expected type for question.items[0]");
                 }
                 switch(question.replies().items().get(1)) {
-                    case UntypedObject asobject -> {
+                    case ActivityStreamObject asobject -> {
                         switch(asobject.attributedTo()) {
                             case Link link -> assertThat(link.href()).isEqualTo("http://joe.example.org");
                             default -> fail("Did not get the expected type for question.items[1].attributedTo");
@@ -3269,7 +3269,7 @@ public class ParseTest {
                     default -> fail("Did not get the expected type for question.items[1]");
                 }
                 switch(question.replies().items().get(2)) {
-                    case UntypedObject asobject -> {
+                    case ActivityStreamObject asobject -> {
                         switch(asobject.attributedTo()) {
                             case Link link -> assertThat(link.href()).isEqualTo("http://john.example.org");
                             default -> fail("Did not get the expected type for question.items[2].attributedTo");
@@ -3419,7 +3419,7 @@ public class ParseTest {
                     default -> fail("Did not get expected type for note.to");
                 }
                 switch(note.tag()) {
-                    case UntypedObject asobject -> assertThat(asobject.name()).isEqualTo("#givingthanks");
+                    case ActivityStreamObject asobject -> assertThat(asobject.name()).isEqualTo("#givingthanks");
                     default -> fail("Did not get expected type for note.tag");
                 }
             }
@@ -3445,7 +3445,7 @@ public class ParseTest {
                             default -> fail("Did not get expected type for list[0]");
                         }
                         switch(list.get(1)) {
-                            case UntypedObject asobject -> {
+                            case ActivityStreamObject asobject -> {
                                 assertThat(asobject.id()).isEqualTo("http://example.org/tags/givingthanks");
                                 assertThat(asobject.name()).isEqualTo("#givingthanks");
                             }

@@ -16,8 +16,6 @@
 package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -36,17 +34,6 @@ public class StringToLinkConverter extends StdConverter<Object, LinkOrObject> {
             return convertListMember(value);
         } catch (Exception e) {
             return switch(value) {
-                case Map<?,?> map ->  new UntypedObject(
-                    null,
-                    ActivityStreamObjectType.Untyped,
-                    (String)map.get("name"),
-                    (String)map.get("id"),
-                    (String)map.get("summary"),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
                 case List<?> list -> new LinkOrObjectList(list.stream().map(StringToLinkConverter::convertListMember).toList());
                 default -> throw new IllegalArgumentException("Argument can't be parsed as a String or LinkOrObject", e);
             };

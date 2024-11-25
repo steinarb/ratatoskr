@@ -78,7 +78,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = LinkRecord.class, name = ActivityStreamObjectType.Names.LINK),
     @Type(value = Mention.class, name = ActivityStreamObjectType.Names.MENTION)
 })
-public sealed interface LinkOrObject permits Link, ActivityStreamObject, UntypedObject, LinkOrObjectList {
+public sealed interface LinkOrObject permits Link, ActivityStreamObject, LinkOrObjectList {
 
     @JsonGetter("@context") @JsonAlias("context") public Object context();
     @JsonDeserialize(converter = ListToActivityStreamObjectTypeConverter.class)
