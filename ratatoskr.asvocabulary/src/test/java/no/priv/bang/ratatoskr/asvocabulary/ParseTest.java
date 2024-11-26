@@ -523,7 +523,7 @@ class ParseTest {
                 }
                 switch (offer.target()) {
                     case LinkOrObjectList list -> {
-                        assertThat(list.size()).isEqualTo(2);
+                        assertThat(list).hasSize(2);
                         switch (list.get(0)) {
                             case Person person -> assertThat(person.name()).isEqualTo("John");
                             default -> fail("Did not get the expected type for list[0]");
@@ -2642,7 +2642,7 @@ class ParseTest {
         switch(object) {
             case OrderedCollectionPage page -> {
                 assertThat(page.summary()).isEqualTo("Page 1 of Sally's notes");
-                assertThat(page.startIndex()).isEqualTo(0);
+                assertThat(page.startIndex()).isZero();
                 assertThat(page.orderedItems()).hasSize(2);
                 switch(page.orderedItems().get(0)) {
                     case Note note -> assertThat(note.name()).isEqualTo("Density of Water");
