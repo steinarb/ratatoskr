@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 public class RatatoskrIntegrationTest extends KarafTestSupport {
 
     @Configuration
+    @Override
     public Option[] config() {
         final var ratatoskrFeatureRepo = maven()
             .groupId("no.priv.bang.ratatoskr")
