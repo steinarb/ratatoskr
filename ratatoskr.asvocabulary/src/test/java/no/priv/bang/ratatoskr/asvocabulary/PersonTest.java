@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PersonTest {
+class PersonTest {
     static ObjectMapper mapper = new ObjectMapper();
 
     @Test
