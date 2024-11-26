@@ -20,12 +20,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import no.priv.bang.ratatoskr.asvocabulary.ActivityStreamObject;
 import no.priv.bang.ratatoskr.asvocabulary.Actor;
 import no.priv.bang.ratatoskr.services.beans.Account;
 import no.priv.bang.ratatoskr.services.beans.CounterBean;
 import no.priv.bang.ratatoskr.services.beans.CounterIncrementStepBean;
 import no.priv.bang.ratatoskr.services.beans.LocaleBean;
-import no.priv.bang.ratatoskr.services.beans.Message;
 
 public interface RatatoskrService {
 
@@ -33,13 +33,13 @@ public interface RatatoskrService {
 
     Actor findActor(String id);
 
-    List<Message> listInbox(Actor actor);
+    List<ActivityStreamObject> listInbox(Actor actor);
 
-    List<Message> postToInbox(Actor actor, Message message);
+    List<ActivityStreamObject> postToInbox(Actor actor, ActivityStreamObject message);
 
-    List<Message> listOutbox(Actor actor);
+    List<ActivityStreamObject> listOutbox(Actor actor);
 
-    List<Message> postToOutbox(Actor actor, Message message);
+    List<ActivityStreamObject> postToOutbox(Actor actor, ActivityStreamObject message);
 
     public Optional<CounterIncrementStepBean> getCounterIncrementStep(String username);
 
