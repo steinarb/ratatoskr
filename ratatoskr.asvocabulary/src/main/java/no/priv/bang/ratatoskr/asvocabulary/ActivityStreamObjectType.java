@@ -128,6 +128,8 @@ public enum ActivityStreamObjectType {
         public static final String LINK = "Link";
         public static final String MENTION = "Mention";
         public static final String UNTYPED = "Untyped";
+
+        private Names() {}
     }
 
     private final String label;
