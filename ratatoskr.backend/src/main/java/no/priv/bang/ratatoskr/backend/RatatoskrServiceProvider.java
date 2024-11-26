@@ -116,7 +116,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         var accounts = new ArrayList<Account>();
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.createStatement()) {
-                try(var results = statement.executeQuery("select * from ratatoskr_accounts")) {
+                try(var results = statement.executeQuery("select account_id, username from ratatoskr_accounts")) {
                     while(results.next()) {
                         var accountId = results.getInt(1);
                         var username = results.getString(2);
@@ -268,7 +268,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     private int findAccount(Connection connection, String username) throws SQLException {
-        try(var findAccount = connection.prepareStatement("select * from ratatoskr_accounts where username=?")) {
+        try(var findAccount = connection.prepareStatement("select account_id from ratatoskr_accounts where username=?")) {
             findAccount.setString(1, username);
             try(var results = findAccount.executeQuery()) {
                 while (results.next()) {
@@ -281,11 +281,11 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     private Integer findCounterIncrementStep(Connection connection, String username) throws SQLException {
-        try(var statement = connection.prepareStatement("select * from counter_increment_steps c join ratatoskr_accounts a on c.account_id=a.account_id where a.username=?")) {
+        try(var statement = connection.prepareStatement("select counter_increment_step from counter_increment_steps c join ratatoskr_accounts a on c.account_id=a.account_id where a.username=?")) {
             statement.setString(1, username);
             try(var results = statement.executeQuery()) {
                 while(results.next()) {
-                    return results.getInt(3);
+                    return results.getInt("counter_increment_step");
                 }
             }
         }
@@ -294,11 +294,11 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     private Integer findCounter(Connection connection, String username) throws SQLException {
-        try(var statement = connection.prepareStatement("select * from counters c join ratatoskr_accounts a on c.account_id=a.account_id where a.username=?")) {
+        try(var statement = connection.prepareStatement("select counter from counters c join ratatoskr_accounts a on c.account_id=a.account_id where a.username=?")) {
             statement.setString(1, username);
             try(var results = statement.executeQuery()) {
                 while(results.next()) {
-                    return results.getInt(3);
+                    return results.getInt("counter");
                 }
             }
         }
