@@ -252,7 +252,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
 
     @Override
     public List<LocaleBean> availableLocales() {
-        return Arrays.asList(Locale.forLanguageTag("nb-NO"), Locale.UK).stream().map(l -> LocaleBean.with().locale(l).build()).collect(Collectors.toList());
+        return Arrays.asList(Locale.forLanguageTag("nb-NO"), Locale.UK).stream().map(l -> LocaleBean.with().locale(l).build()).toList();
     }
 
     @Override
