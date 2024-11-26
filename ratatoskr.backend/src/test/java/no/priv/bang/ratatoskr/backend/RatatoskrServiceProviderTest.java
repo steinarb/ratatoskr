@@ -41,7 +41,7 @@ import no.priv.bang.osgiservice.users.UserManagementService;
 import static no.priv.bang.ratatoskr.services.RatatoskrConstants.*;
 
 class RatatoskrServiceProviderTest {
-    private final static Locale NB_NO = Locale.forLanguageTag("nb-no");
+    private static final Locale NB_NO = Locale.forLanguageTag("nb-no");
 
     private static DataSource datasource;
 
