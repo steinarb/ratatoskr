@@ -39,7 +39,10 @@ import org.osgi.service.log.Logger;
 
 import no.priv.bang.ratatoskr.asvocabulary.ActivityStreamObject;
 import no.priv.bang.ratatoskr.asvocabulary.Actor;
+import no.priv.bang.ratatoskr.asvocabulary.Link;
+import no.priv.bang.ratatoskr.asvocabulary.LinkOrObject;
 import no.priv.bang.ratatoskr.asvocabulary.Person;
+import no.priv.bang.ratatoskr.services.RatatoskrException;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
 import no.priv.bang.ratatoskr.services.beans.Account;
 import no.priv.bang.ratatoskr.services.beans.CounterBean;
@@ -134,9 +137,55 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         return accounts;
     }
 
+    public Optional<Actor> addActor(Actor person) {
+        var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, person.id());
+                statement.setString(2, person.preferredUsername());
+                statement.setString(3, person.name());
+                statement.setString(4, person.summary());
+                statement.setString(5, person.inbox());
+                statement.setString(6, person.following());
+                statement.setString(7, person.followers());
+                statement.setString(8, person.liked());
+                statement.setString(9, findHref(person.icon()));
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+
+        return findActor(person.id());
+    }
+
     @Override
-    public Actor findActor(String id) {
-        return Person.with().id(id).build();
+    public Optional<Actor> findActor(String id) {
+        var sql = "select preferred_username, name, summary, inbox, following, followers, liked, icon from actors where id=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, id);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        return Optional.of(Person.with()
+                            .id(id)
+                            .preferredUsername(results.getString("preferred_username"))
+                            .name(results.getString("name"))
+                            .summary(results.getString("summary"))
+                            .inbox(results.getString("inbox"))
+                            .following(results.getString("following"))
+                            .followers(results.getString("followers"))
+                            .liked(results.getString("liked"))
+                            .icon(results.getString("icon"))
+                            .build());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to fetch actor", e);
+        }
+
+        return Optional.empty();
     }
 
     @Override
@@ -321,6 +370,13 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         ratatoskroles.entrySet().stream()
             .filter(r -> !existingroles.contains(r.getKey()))
             .forEach(r ->  useradmin.addRole(Role.with().id(-1).rolename(r.getKey()).description(r.getValue()).build()));
+    }
+
+    private String findHref(LinkOrObject icon) {
+        return switch (icon) {
+            case Link link -> link.href();
+            default -> null;
+        };
     }
 
     Map<String, String> transformResourceBundleToMap(Locale locale) {

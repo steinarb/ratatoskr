@@ -40,6 +40,29 @@ class RatatoskrLiquibaseTest {
         try(var connection = createConnection("ratatoskr")) {
             addAccounts(connection);
             assertAccounts(connection);
+            var actorId = addActor(
+                connection,
+                "https://kenzoishii.example.com",
+                "kenzoishii",
+                "石井健蔵",
+                "この方はただの例です",
+                "https://kenzoishii.example.com/inbox.json",
+                "https://kenzoishii.example.com/following.json",
+                "https://kenzoishii.example.com/followers.json",
+                "https://kenzoishii.example.com/liked.json",
+                "https://kenzoishii.example.com/image/165987aklre4");
+            assertActor(
+                connection,
+                actorId,
+                "https://kenzoishii.example.com",
+                "kenzoishii",
+                "石井健蔵",
+                "この方はただの例です",
+                "https://kenzoishii.example.com/inbox.json",
+                "https://kenzoishii.example.com/following.json",
+                "https://kenzoishii.example.com/followers.json",
+                "https://kenzoishii.example.com/liked.json",
+                "https://kenzoishii.example.com/image/165987aklre4");
         }
 
         ratatoskrLiquibase.updateSchema(createConnection("ratatoskr"));
@@ -109,6 +132,57 @@ class RatatoskrLiquibaseTest {
             }
         }
 
+        return -1;
+    }
+
+    private int addActor(Connection connection, String id, String preferredUsername, String name, String summary, String inbox, String following, String followers, String liked, String icon) throws Exception {
+        var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try(var statement = connection.prepareStatement(sql)) {
+            statement.setString(1, id);
+            statement.setString(2, preferredUsername);
+            statement.setString(3, name);
+            statement.setString(4, summary);
+            statement.setString(5, inbox);
+            statement.setString(6, following);
+            statement.setString(7, followers);
+            statement.setString(8, liked);
+            statement.setString(9, icon);
+            statement.executeUpdate();
+        }
+
+        return findActorId(connection, id);
+    }
+
+    private void assertActor(Connection connection, int actorId, String id, String preferredUsername, String name, String summary, String inbox, String following, String followers, String liked, String icon) throws Exception {
+        var sql = "select * from actors where actor_id=?";
+        try(var statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, actorId);
+            try(var results = statement.executeQuery()) {
+                while(results.next()) {
+                    assertThat(results.getString("id")).isEqualTo(id);
+                    assertThat(results.getString("preferred_username")).isEqualTo(preferredUsername);
+                    assertThat(results.getString("name")).isEqualTo(name);
+                    assertThat(results.getString("summary")).isEqualTo(summary);
+                    assertThat(results.getString("inbox")).isEqualTo(inbox);
+                    assertThat(results.getString("following")).isEqualTo(following);
+                    assertThat(results.getString("followers")).isEqualTo(followers);
+                    assertThat(results.getString("liked")).isEqualTo(liked);
+                    assertThat(results.getString("icon")).isEqualTo(icon);
+                }
+            }
+        }
+    }
+
+    private int findActorId(Connection connection, String id) throws Exception {
+        var sql = "select actor_id from actors where id=?";
+        try(var statement = connection.prepareStatement(sql)) {
+            statement.setString(1, id);
+            try(var results = statement.executeQuery()) {
+                while(results.next()) {
+                    return results.getInt("actor_id");
+                }
+            }
+        }
         return -1;
     }
 

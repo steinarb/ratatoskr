@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.db.liquibase.test.RatatoskrTestDbLiquibaseRunner;
 import no.priv.bang.ratatoskr.services.beans.CounterIncrementStepBean;
 import no.priv.bang.ratatoskr.services.beans.LocaleBean;
@@ -171,7 +172,7 @@ class RatatoskrServiceProviderTest {
     }
 
     @Test
-    void testFindActor() {
+    void testAddActor() {
         var logservice = new MockLogService();
         var useradmin = mock(UserManagementService.class);
         var provider = new RatatoskrServiceProvider();
@@ -180,10 +181,20 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        var actor = provider.findActor("https://kenzoishii.example.com/");
-        assertThat(actor)
-            .hasFieldOrPropertyWithValue("id", "https://kenzoishii.example.com/");
+        var person = Person.with()
+            .id("https://kenzoishii.example.com")
+            .preferredUsername("kenzoishii")
+            .name("石井健蔵")
+            .summary("この方はただの例です")
+            .inbox("https://kenzoishii.example.com/inbox.json")
+            .following("https://kenzoishii.example.com/following.json")
+            .followers("https://kenzoishii.example.com/followers.json")
+            .liked("https://kenzoishii.example.com/liked.json")
+            .icon("https://kenzoishii.example.com/image/165987aklre4")
+            .build();
 
+        var actor = provider.addActor(person);
+        assertThat(actor).hasValue(person);
     }
 
     @Test

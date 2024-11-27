@@ -204,6 +204,21 @@ public record Person(
             return this;
         }
 
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder summary(String summary) {
+            this.summary = summary;
+            return this;
+        }
+
+        public Builder icon(String iconUrl) {
+            this.icon = Link.with().href(iconUrl).build();
+            return this;
+        }
+
     }
 
 }

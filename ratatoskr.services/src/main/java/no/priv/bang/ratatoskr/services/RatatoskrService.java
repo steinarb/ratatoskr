@@ -31,7 +31,7 @@ public interface RatatoskrService {
 
     public List<Account> getAccounts();
 
-    Actor findActor(String id);
+    Optional<Actor> findActor(String id);
 
     List<ActivityStreamObject> listInbox(Actor actor);
 

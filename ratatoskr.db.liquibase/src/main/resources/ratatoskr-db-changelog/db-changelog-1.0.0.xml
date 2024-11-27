@@ -42,6 +42,34 @@ under the License.
 
     </changeSet>
 
+    <changeSet author="sb" id="ratatoskr-1.0.0-actors">
+        <createTable tableName="actors">
+            <column autoIncrement="true" name="actor_id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="actor_primary_key"/>
+            </column>
+            <column name="id" type="VARCHAR(128)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="preferred_username" type="VARCHAR(64)" />
+            <column name="name" type="VARCHAR(128)" />
+            <column name="summary" type="VARCHAR(1024)" />
+            <column name="inbox" type="VARCHAR(128)" />
+            <column name="following" type="VARCHAR(128)" />
+            <column name="followers" type="VARCHAR(128)" />
+            <column name="liked" type="VARCHAR(128)" />
+            <column name="icon" type="VARCHAR(128)" />
+        </createTable>
+
+        <createIndex indexName="actors_actor_id_index" tableName="actors">
+            <column name="actor_id"/>
+        </createIndex>
+
+        <createIndex indexName="actors_id" tableName="actors">
+            <column name="id" type="VARCHAR(128)" />
+        </createIndex>
+
+    </changeSet>
+
     <changeSet author="sb" id="ratatoskr-1.0.0-counter_increment_steps">
         <preConditions onFail="CONTINUE" >
             <not>
