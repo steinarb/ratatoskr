@@ -49,6 +49,7 @@ import no.priv.bang.ratatoskr.services.beans.CounterBean;
 import no.priv.bang.ratatoskr.services.beans.CounterIncrementStepBean;
 import no.priv.bang.ratatoskr.services.beans.Credentials;
 import no.priv.bang.ratatoskr.services.beans.LocaleBean;
+import no.priv.bang.ratatoskr.services.beans.Loginresult;
 import no.priv.bang.ratatoskr.web.api.resources.ErrorMessage;
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 import no.priv.bang.osgiservice.users.UserManagementService;
@@ -78,12 +79,14 @@ class RatatoskrWebApiTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
+        var bean = mapper.readValue(response.getOutputStreamBinaryContent(), Loginresult.class);
+        assertThat(bean.success()).isTrue();
     }
 
     @Test
     void testLoginWrongPassword() throws Exception {
         var username = "jd";
-        var password = Base64.getEncoder().encodeToString("johnnyBoi".getBytes());
+        var password = Base64.getEncoder().encodeToString("wrongPass".getBytes());
         var credentials = Credentials.with().username(username).password(password).build();
         var logservice = new MockLogService();
         var ratatoskr = mock(RatatoskrService.class);
@@ -97,6 +100,8 @@ class RatatoskrWebApiTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
+        var bean = mapper.readValue(response.getOutputStreamBinaryContent(), Loginresult.class);
+        assertThat(bean.success()).isFalse();
     }
 
     @Test
