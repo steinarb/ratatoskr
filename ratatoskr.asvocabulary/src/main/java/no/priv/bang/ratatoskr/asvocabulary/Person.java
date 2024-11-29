@@ -70,6 +70,16 @@ public record Person(
         return new Builder();
     }
 
+    public static Builder with(Actor actor) {
+        var builder = new Builder();
+        builder.id = actor.id();
+        builder.preferredUsername = actor.preferredUsername();
+        builder.name = actor.name();
+        builder.summary = actor.summary();
+        builder.icon = actor.icon();
+        return builder;
+    }
+
     public static class Builder {
         private Object context = "https://www.w3.org/ns/activitystreams";
         private ActivityStreamObjectType type = ActivityStreamObjectType.Person;

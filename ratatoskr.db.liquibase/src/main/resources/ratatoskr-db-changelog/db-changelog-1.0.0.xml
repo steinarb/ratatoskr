@@ -65,7 +65,7 @@ under the License.
         </createIndex>
 
         <createIndex indexName="actors_id" tableName="actors">
-            <column name="id" type="VARCHAR(128)" />
+            <column name="id" />
         </createIndex>
 
     </changeSet>

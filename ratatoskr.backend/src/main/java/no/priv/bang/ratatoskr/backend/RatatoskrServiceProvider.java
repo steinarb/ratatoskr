@@ -17,6 +17,7 @@ package no.priv.bang.ratatoskr.backend;
 
 import static no.priv.bang.ratatoskr.services.RatatoskrConstants.*;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -137,6 +138,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         return accounts;
     }
 
+    @Override
     public Optional<Actor> addActor(Actor person) {
         var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try(var connection = datasource.getConnection()) {
@@ -161,23 +163,13 @@ public class RatatoskrServiceProvider implements RatatoskrService {
 
     @Override
     public Optional<Actor> findActor(String id) {
-        var sql = "select preferred_username, name, summary, inbox, following, followers, liked, icon from actors where id=?";
+        var sql = "select id, preferred_username, name, summary, inbox, following, followers, liked, icon from actors where id=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
                 statement.setString(1, id);
                 try(var results = statement.executeQuery()) {
                     while(results.next()) {
-                        return Optional.of(Person.with()
-                            .id(id)
-                            .preferredUsername(results.getString("preferred_username"))
-                            .name(results.getString("name"))
-                            .summary(results.getString("summary"))
-                            .inbox(results.getString("inbox"))
-                            .following(results.getString("following"))
-                            .followers(results.getString("followers"))
-                            .liked(results.getString("liked"))
-                            .icon(results.getString("icon"))
-                            .build());
+                        return unpackPerson(results);
                     }
                 }
             }
@@ -186,6 +178,39 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<Actor> findActorWithUsername(String username) {
+        var sql = "select id, preferred_username, name, summary, inbox, following, followers, liked, icon from actors where preferred_username=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        return unpackPerson(results);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to find actor using username", e);
+        }
+
+        return Optional.empty();
+    }
+
+    private Optional<Actor> unpackPerson(ResultSet results) throws SQLException {
+        return Optional.of(Person.with()
+            .id(results.getString("id"))
+            .preferredUsername(results.getString("preferred_username"))
+            .name(results.getString("name"))
+            .summary(results.getString("summary"))
+            .inbox(results.getString("inbox"))
+            .following(results.getString("following"))
+            .followers(results.getString("followers"))
+            .liked(results.getString("liked"))
+            .icon(results.getString("icon"))
+            .build());
     }
 
     @Override

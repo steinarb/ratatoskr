@@ -39,6 +39,7 @@ under the License.
         <module>ratatoskr.backend.testdata</module>
         <module>ratatoskr.web.security</module>
         <module>ratatoskr.web.api</module>
+        <module>ratatoskr.web.as</module>
         <module>ratatoskr.web.frontend</module>
         <module>karaf</module>
         <module>ratatoskr.tests</module>
