@@ -29,6 +29,22 @@ under the License.
 
     <name>Ratatoskr</name>
 
+    <modules>
+        <module>ratatoskr.db.liquibase</module>
+        <module>ratatoskr.db.liquibase.test</module>
+        <module>ratatoskr.db.liquibase.production</module>
+        <module>ratatoskr.asvocabulary</module>
+        <module>ratatoskr.services</module>
+        <module>ratatoskr.backend</module>
+        <module>ratatoskr.backend.testdata</module>
+        <module>ratatoskr.web.security</module>
+        <module>ratatoskr.web.api</module>
+        <module>ratatoskr.web.frontend</module>
+        <module>karaf</module>
+        <module>ratatoskr.tests</module>
+        <module>jacoco-coverage-report</module>
+    </modules>
+
     <properties>
         <snakeyaml.version>1.17</snakeyaml.version>
         <open-iconic.version>1.1.1</open-iconic.version>
@@ -225,17 +241,4 @@ under the License.
         </profile>
     </profiles>
 
-    <modules>  <module>ratatoskr.db.liquibase</module>
-    <module>ratatoskr.db.liquibase.test</module>
-    <module>ratatoskr.db.liquibase.production</module>
-    <module>ratatoskr.asvocabulary</module>
-    <module>ratatoskr.services</module>
-    <module>ratatoskr.backend</module>
-    <module>ratatoskr.backend.testdata</module>
-    <module>ratatoskr.web.security</module>
-    <module>ratatoskr.web.api</module>
-    <module>ratatoskr.web.frontend</module>
-    <module>karaf</module>
-    <module>ratatoskr.tests</module>
-    <module>jacoco-coverage-report</module>
-</modules></project>
+</project>
