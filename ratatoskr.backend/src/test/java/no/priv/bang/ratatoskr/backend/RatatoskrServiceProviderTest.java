@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,31 @@ class RatatoskrServiceProviderTest {
         var runner = new RatatoskrTestDbLiquibaseRunner();
         runner.activate();
         runner.prepare(datasource);
+        // Pre-populate the database with some data
+        var ratatoskr = new RatatoskrServiceProvider();
+        ratatoskr.setDatasource(datasource);
+        ratatoskr.setUseradmin(mock(UserManagementService.class));
+        ratatoskr.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+        var johnd = Person.with()
+            .id("http://localhost:8181/ratatoskr/as/actor/johnd")
+            .preferredUsername("johnd")
+            .name("John Doe")
+            .summary("The common man")
+            .icon("http://localhost:8181/ratatoskr/image/165987aklre4")
+            .build();
+        ratatoskr.addActor(johnd);
+        var sally = Person.with()
+            .id("https://sally.example.com")
+            .preferredUsername("sally")
+            .name("Sally Smith")
+            .summary("Someone important")
+            .inbox("https://sally.example.com/inbox.json")
+            .following("https://sally.example.com/following.json")
+            .followers("https://sally.example.com/followers.json")
+            .liked("https://sally.example.com/liked.json")
+            .icon("http://localhost:8181/ratatoskr/image/165987aklre6")
+            .build();
+        ratatoskr.addActor(sally);
     }
 
     @Test
@@ -373,6 +398,41 @@ class RatatoskrServiceProviderTest {
         var sally = provider.findActorWithUsername("sally").get();
         var updatedfollowers = provider.addFollowerToUsername(username, sally.id());
         assertThat(updatedfollowers).isNotEmpty().contains(sally);
+    }
+
+    @Test
+    void testAddFollowerWithSQLExceptionThrown() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        var mockedDatasource = spy(datasource);
+        when(mockedDatasource.getConnection()).thenCallRealMethod().thenCallRealMethod().thenThrow(SQLException.class);
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockedDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var username = "johnd";
+        var followers = provider.findFollowersWithUsername(username);
+        assertThat(followers).isEmpty();
+        var sallyId = provider.findActorWithUsername("sally").get().id();
+        assertThrows(RatatoskrException.class, () -> provider.addFollowerToUsername(username, sallyId));
+    }
+
+    @Test
+    void testFindFollowersWithSQLExceptionThrown() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        var mockedDatasource = mock(DataSource.class);
+        when(mockedDatasource.getConnection()).thenThrow(SQLException.class);
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockedDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var username = "johnd";
+        assertThrows(RatatoskrException.class, () -> provider.findFollowersWithUsername(username));
     }
 
     @Test

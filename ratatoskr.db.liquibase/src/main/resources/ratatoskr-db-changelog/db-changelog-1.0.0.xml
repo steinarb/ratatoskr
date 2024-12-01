@@ -70,6 +70,25 @@ under the License.
 
     </changeSet>
 
+    <changeSet author="sb" id="ratatoskr-1.0.0-followers">
+        <createTable tableName="followers">
+            <column autoIncrement="true" name="follower_id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="followers_primary_key"/>
+            </column>
+            <column name="followed" type="INTEGER" />
+            <column name="follower" type="INTEGER" />
+        </createTable>
+
+        <createIndex indexName="followers_follower_id_index" tableName="followers">
+            <column name="follower_id"/>
+        </createIndex>
+
+        <createIndex indexName="followers_followed" tableName="followers">
+            <column name="followed" />
+        </createIndex>
+
+    </changeSet>
+
     <changeSet author="sb" id="ratatoskr-1.0.0-counter_increment_steps">
         <preConditions onFail="CONTINUE" >
             <not>

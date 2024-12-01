@@ -37,6 +37,10 @@ public interface RatatoskrService {
 
     public Optional<Actor> findActorWithUsername(String username);
 
+    List<Actor> findFollowersWithUsername(String username);
+
+    List<Actor> addFollowerToUsername(String username, String id);
+
     List<ActivityStreamObject> listInbox(Actor actor);
 
     List<ActivityStreamObject> postToInbox(Actor actor, ActivityStreamObject message);

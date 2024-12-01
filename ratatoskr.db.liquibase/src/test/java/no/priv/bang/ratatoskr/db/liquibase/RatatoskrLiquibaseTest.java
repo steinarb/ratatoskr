@@ -63,6 +63,19 @@ class RatatoskrLiquibaseTest {
                 "https://kenzoishii.example.com/followers.json",
                 "https://kenzoishii.example.com/liked.json",
                 "https://kenzoishii.example.com/image/165987aklre4");
+            var anotherActorId = addActor(
+                connection,
+                "https://sally.example.com",
+                "sally",
+                "Sally Smith",
+                "Someone important",
+                "https://sally.example.com/inbox.json",
+                "https://sally.example.com/following.json",
+                "https://sally.example.com/followers.json",
+                "https://sally.example.com/liked.json",
+                "http://localhost:8181/ratatoskr/image/165987aklre6");
+            addFollower(connection, actorId, anotherActorId);
+            assertFollower(connection, actorId, anotherActorId);
         }
 
         ratatoskrLiquibase.updateSchema(createConnection("ratatoskr"));
@@ -169,6 +182,26 @@ class RatatoskrLiquibaseTest {
                     assertThat(results.getString("liked")).isEqualTo(liked);
                     assertThat(results.getString("icon")).isEqualTo(icon);
                 }
+            }
+        }
+    }
+
+    private void addFollower(Connection connection, int actorId, int anotherActorId) throws Exception {
+        var sql = "insert into followers (followed, follower) values (?, ?)";
+        try(var statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, actorId);
+            statement.setInt(2, anotherActorId);
+            statement.executeUpdate();
+        }
+    }
+
+    private void assertFollower(Connection connection, int actorId, int anotherActorId) throws Exception {
+        var sql = "select * from followers where followed=? and follower=?";
+        try(var statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, actorId);
+            statement.setInt(2, anotherActorId);
+            try(var results = statement.executeQuery()) {
+                assertTrue(results.next());
             }
         }
     }

@@ -199,6 +199,42 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         return Optional.empty();
     }
 
+    @Override
+    public List<Actor> findFollowersWithUsername(String username) {
+        var list = new ArrayList<Actor>();
+        var sql = "select a2.id, a2.preferred_username, a2.name, a2.summary, a2.inbox, a2.following, a2.followers, a2.liked, a2.icon from actors a join followers f on a.actor_id=f.followed join actors a2 on f.follower=a2.actor_id where a.preferred_username=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        unpackPerson(results).ifPresent(list::add);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error fetching followers list", e);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<Actor> addFollowerToUsername(String username, String id) {
+        var sql = "insert into followers (followed, follower) values ((select actor_id from actors where preferred_username=?), (select actor_id from actors where id=?))";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                statement.setString(2, id);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error adding to followers list", e);
+        }
+
+        return findFollowersWithUsername(username);
+    }
+
     private Optional<Actor> unpackPerson(ResultSet results) throws SQLException {
         return Optional.of(Person.with()
             .id(results.getString("id"))

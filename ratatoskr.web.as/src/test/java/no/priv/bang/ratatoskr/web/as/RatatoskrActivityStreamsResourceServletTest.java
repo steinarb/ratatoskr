@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,10 @@ package no.priv.bang.ratatoskr.web.as;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Optional;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -44,7 +35,6 @@ import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.log.LogService;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -52,6 +42,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
 
 import no.priv.bang.ratatoskr.asvocabulary.Actor;
+import no.priv.bang.ratatoskr.asvocabulary.Collection;
 import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.backend.RatatoskrServiceProvider;
 import no.priv.bang.ratatoskr.db.liquibase.test.RatatoskrTestDbLiquibaseRunner;
@@ -94,6 +85,18 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .icon("https://kenzoishii.example.com/image/165987aklre4")
             .build();
         ratatoskr.addActor(kenzoishii);
+        var sally = Person.with()
+            .id("https://sally.example.com")
+            .preferredUsername("sally")
+            .name("Sally Smith")
+            .summary("Someone important")
+            .inbox("https://sally.example.com/inbox.json")
+            .following("https://sally.example.com/following.json")
+            .followers("https://sally.example.com/followers.json")
+            .liked("https://sally.example.com/liked.json")
+            .icon("http://localhost:8181/ratatoskr/image/165987aklre6")
+            .build();
+        ratatoskr.addActor(sally);
         var johnd = Person.with()
             .id("http://localhost:8181/ratatoskr/as/actor/johnd")
             .preferredUsername("johnd")
@@ -102,6 +105,8 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .icon("http://localhost:8181/ratatoskr/image/165987aklre4")
             .build();
         ratatoskr.addActor(johnd);
+        ratatoskr.addFollowerToUsername(johnd.preferredUsername(), kenzoishii.id());
+        ratatoskr.addFollowerToUsername(johnd.preferredUsername(), sally.id());
     }
 
     @Test
@@ -149,6 +154,32 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    void testGetFollowersCollection() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var ratatoskr = new RatatoskrServiceProvider();
+        ratatoskr.setLogservice(logservice);
+        ratatoskr.setDatasource(datasource);
+        ratatoskr.setUseradmin(useradmin);
+        ratatoskr.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(ratatoskr , useradmin, logservice);
+        var request = buildGetUrl("/followers/johnd");
+        var response = new MockHttpServletResponse();
+
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        var followers = mapper.readValue(response.getOutputStreamBinaryContent(), Collection.class);
+        var follower1 = ratatoskr.findActor("https://kenzoishii.example.com").get();
+        var follower2 = ratatoskr.findActor("https://sally.example.com").get();
+        assertThat(followers.id()).isEqualTo("http://localhost:8181/ratatoskr/as/followers/johnd");
+        assertThat(followers.totalItems()).isEqualTo(2);
+        assertThat(followers.items()).hasSize(2);
+        assertThat(followers.current()).isEqualTo(follower1);
+        assertThat(followers.first()).isEqualTo(follower1);
+        assertThat(followers.last()).isEqualTo(follower2);
     }
 
     private MockHttpServletRequest buildGetUrl(String resource) {
