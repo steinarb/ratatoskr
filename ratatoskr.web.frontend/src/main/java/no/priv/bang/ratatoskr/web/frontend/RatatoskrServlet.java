@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,7 @@ public class RatatoskrServlet extends FrontendServlet {
     private static final long serialVersionUID = -3496606785818930881L;
 
     public RatatoskrServlet() {
-        super();
-        // The paths used by the react router
-        setRoutes(
-            "/",
-            "/counter",
-            "/login",
-            "/unauthorized");
+        super(RatatoskrServlet.class);
     }
 
     @Override
