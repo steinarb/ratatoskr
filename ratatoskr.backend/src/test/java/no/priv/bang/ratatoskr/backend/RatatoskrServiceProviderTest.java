@@ -454,6 +454,39 @@ class RatatoskrServiceProviderTest {
     }
 
     @Test
+    void testAddFollowedWithSQLExceptionThrown() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        var mockDatasource = spy(datasource);
+        when(mockDatasource.getConnection()).thenCallRealMethod().thenThrow(SQLException.class);
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var username = "johnd";
+        var sallyId = provider.findActorWithUsername("sally").get().id();
+        assertThrows(RatatoskrException.class, () -> provider.addFollowedToUsername(username, sallyId));
+    }
+
+    @Test
+    void testfindFollowingWithUsernameWithSQLExceptionThrown() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        var mockDatasource = mock(DataSource.class);
+        when(mockDatasource.getConnection()).thenThrow(SQLException.class);
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var username = "johnd";
+        assertThrows(RatatoskrException.class, () -> provider.findFollowingWithUsername(username));
+    }
+
+    @Test
     void testAddLikes() {
         var logservice = new MockLogService();
         var useradmin = mock(UserManagementService.class);

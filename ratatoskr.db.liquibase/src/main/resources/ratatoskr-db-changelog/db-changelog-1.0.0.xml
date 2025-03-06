@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-Copyright 2023 Steinar Bang
+Copyright 2023-2025 Steinar Bang
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -85,6 +85,25 @@ under the License.
 
         <createIndex indexName="followers_followed" tableName="followers">
             <column name="followed" />
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet author="sb" id="ratatoskr-1.0.0-following">
+        <createTable tableName="following">
+            <column autoIncrement="true" name="following_id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="following_primary_key"/>
+            </column>
+            <column name="follower" type="INTEGER" />
+            <column name="followed" type="INTEGER" />
+        </createTable>
+
+        <createIndex indexName="following_following_id_index" tableName="following">
+            <column name="following_id"/>
+        </createIndex>
+
+        <createIndex indexName="following_follower" tableName="following">
+            <column name="follower" />
         </createIndex>
 
     </changeSet>

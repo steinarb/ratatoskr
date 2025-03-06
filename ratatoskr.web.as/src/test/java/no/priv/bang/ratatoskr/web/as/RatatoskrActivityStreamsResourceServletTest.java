@@ -107,6 +107,8 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
         ratatoskr.addActor(johnd);
         ratatoskr.addFollowerToUsername(johnd.preferredUsername(), kenzoishii.id());
         ratatoskr.addFollowerToUsername(johnd.preferredUsername(), sally.id());
+        ratatoskr.addFollowedToUsername(johnd.preferredUsername(), kenzoishii.id());
+        ratatoskr.addFollowedToUsername(johnd.preferredUsername(), sally.id());
     }
 
     @Test
@@ -175,6 +177,32 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
         var follower1 = ratatoskr.findActor("https://kenzoishii.example.com").get();
         var follower2 = ratatoskr.findActor("https://sally.example.com").get();
         assertThat(followers.id()).isEqualTo("http://localhost:8181/ratatoskr/as/followers/johnd");
+        assertThat(followers.totalItems()).isEqualTo(2);
+        assertThat(followers.items()).hasSize(2);
+        assertThat(followers.current()).isEqualTo(follower1);
+        assertThat(followers.first()).isEqualTo(follower1);
+        assertThat(followers.last()).isEqualTo(follower2);
+    }
+
+    @Test
+    void testGetFollowingCollection() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var ratatoskr = new RatatoskrServiceProvider();
+        ratatoskr.setLogservice(logservice);
+        ratatoskr.setDatasource(datasource);
+        ratatoskr.setUseradmin(useradmin);
+        ratatoskr.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(ratatoskr , useradmin, logservice);
+        var request = buildGetUrl("/following/johnd");
+        var response = new MockHttpServletResponse();
+
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        var followers = mapper.readValue(response.getOutputStreamBinaryContent(), Collection.class);
+        var follower1 = ratatoskr.findActor("https://kenzoishii.example.com").get();
+        var follower2 = ratatoskr.findActor("https://sally.example.com").get();
+        assertThat(followers.id()).isEqualTo("http://localhost:8181/ratatoskr/as/following/johnd");
         assertThat(followers.totalItems()).isEqualTo(2);
         assertThat(followers.items()).hasSize(2);
         assertThat(followers.current()).isEqualTo(follower1);
