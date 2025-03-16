@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@ package no.priv.bang.ratatoskr.db.liquibase.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.db.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
+
+import org.assertj.db.type.AssertDbConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -31,11 +34,13 @@ class RatatoskrTestDbLiquibaseRunnerTest {
     @Test
     void testCreateAndVerifySomeDataInSomeTables() throws Exception {
         var datasource = createDataSource("ratatoskr");
+        var assertjConnection = AssertDbConnectionFactory.of(datasource).create();
 
         var runner = new RatatoskrTestDbLiquibaseRunner();
         runner.activate();
         runner.prepare(datasource);
-        assertAccounts(datasource);
+        var accounts = assertjConnection.table("ratatoskr_accounts").build();
+        assertThat(accounts).exists().isEmpty();
     }
 
     @Test
@@ -112,20 +117,6 @@ class RatatoskrTestDbLiquibaseRunnerTest {
             SQLException.class,
             () -> runner.prepare(datasource));
         assertThat(e.getMessage()).startsWith("Error updating ratatoskr test database schema");
-    }
-
-    private void assertAccounts(DataSource datasource) throws Exception {
-        var resultcount = 0;
-        try (var connection = datasource.getConnection()) {
-            try(var statement = connection.prepareStatement("select * from ratatoskr_accounts")) {
-                try (var results = statement.executeQuery()) {
-                    while (results.next()) {
-                        ++resultcount;
-                    }
-                }
-            }
-        }
-        assertEquals(0, resultcount);
     }
 
     private DataSource createDataSource(String dbname) throws SQLException {

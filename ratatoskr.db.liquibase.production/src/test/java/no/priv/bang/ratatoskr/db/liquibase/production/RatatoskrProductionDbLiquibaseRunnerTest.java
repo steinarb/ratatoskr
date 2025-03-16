@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 package no.priv.bang.ratatoskr.db.liquibase.production;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.db.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
+
+import org.assertj.db.type.AssertDbConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -36,12 +38,16 @@ class RatatoskrProductionDbLiquibaseRunnerTest {
         var properties = new Properties();
         properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:ratatoskr;create=true");
         var datasource = dataSourceFactory.createDataSource(properties);
+        var assertjConnection = AssertDbConnectionFactory.of(datasource).create();
 
         var runner = new RatatoskrProductionDbLiquibaseRunner();
         runner.activate();
         runner.prepare(datasource);
+        var accounts1 = assertjConnection.table("ratatoskr_accounts").build();
+        assertThat(accounts1).exists().isEmpty();
         addAccount(datasource, "jd");
-        assertAccounts(datasource);
+        var accounts2 = assertjConnection.table("ratatoskr_accounts").build();
+        assertThat(accounts2).exists().hasNumberOfRows(1).row(0).value("username").isEqualTo("jd");
     }
 
 
@@ -124,21 +130,6 @@ class RatatoskrProductionDbLiquibaseRunnerTest {
         assertThat(e.getMessage()).startsWith("Failed to modify schema of ratatoskr PostgreSQL database");
     }
 
-
-    private void assertAccounts(DataSource datasource) throws Exception {
-        try (var connection = datasource.getConnection()) {
-            try(var statement = connection.prepareStatement("select * from ratatoskr_accounts")) {
-                try (var results = statement.executeQuery()) {
-                    assertAccount(results, "jd");
-                }
-            }
-        }
-    }
-
-    private void assertAccount(ResultSet results, String username) throws Exception {
-        assertTrue(results.next());
-        assertEquals(username, results.getString(2)); // column 1 is the id
-    }
 
     private int addAccount(DataSource datasource, String username) throws Exception {
         try (var connection = datasource.getConnection()) {
