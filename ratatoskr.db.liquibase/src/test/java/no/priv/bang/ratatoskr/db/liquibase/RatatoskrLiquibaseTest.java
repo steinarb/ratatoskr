@@ -47,9 +47,7 @@ class RatatoskrLiquibaseTest {
         var accounts1 = assertjConnection.table("ratatoskr_accounts").build();
         assertThat(accounts1).exists().isEmpty();
 
-        try(var connection = datasource.getConnection()) {
-            addAccounts(connection);
-        }
+        addAccounts(datasource);
 
         var accounts2 = assertjConnection.table("ratatoskr_accounts").build();
         assertThat(accounts2).hasNumberOfRows(1);
@@ -57,20 +55,17 @@ class RatatoskrLiquibaseTest {
         var actors1 = assertjConnection.table("actors").build();
         assertThat(actors1).exists().isEmpty();
 
-        var actorId = 0;
-        try(var connection = datasource.getConnection()) {
-            actorId = addActor(
-                connection,
-                "https://kenzoishii.example.com",
-                "kenzoishii",
-                "石井健蔵",
-                "この方はただの例です",
-                "https://kenzoishii.example.com/inbox.json",
-                "https://kenzoishii.example.com/following.json",
-                "https://kenzoishii.example.com/followers.json",
-                "https://kenzoishii.example.com/liked.json",
-                "https://kenzoishii.example.com/image/165987aklre4");
-        }
+        var actorId = addActor(
+            datasource,
+            "https://kenzoishii.example.com",
+            "kenzoishii",
+            "石井健蔵",
+            "この方はただの例です",
+            "https://kenzoishii.example.com/inbox.json",
+            "https://kenzoishii.example.com/following.json",
+            "https://kenzoishii.example.com/followers.json",
+            "https://kenzoishii.example.com/liked.json",
+            "https://kenzoishii.example.com/image/165987aklre4");
 
         var actors2 = assertjConnection.table("actors").build();
         assertThat(actors2).exists().hasNumberOfRows(1).row(0)
@@ -85,21 +80,18 @@ class RatatoskrLiquibaseTest {
             .value("liked").isEqualTo("https://kenzoishii.example.com/liked.json")
             .value("icon").isEqualTo("https://kenzoishii.example.com/image/165987aklre4");
 
-        var anotherActorId = 0;
-        try(var connection = datasource.getConnection()) {
-            anotherActorId = addActor(
-                connection,
-                "https://sally.example.com",
-                "sally",
-                "Sally Smith",
-                "Someone important",
-                "https://sally.example.com/inbox.json",
-                "https://sally.example.com/following.json",
-                "https://sally.example.com/followers.json",
-                "https://sally.example.com/liked.json",
-                "http://localhost:8181/ratatoskr/image/165987aklre6");
-            addFollower(connection, actorId, anotherActorId);
-        }
+        var anotherActorId = addActor(
+            datasource,
+            "https://sally.example.com",
+            "sally",
+            "Sally Smith",
+            "Someone important",
+            "https://sally.example.com/inbox.json",
+            "https://sally.example.com/following.json",
+            "https://sally.example.com/followers.json",
+            "https://sally.example.com/liked.json",
+            "http://localhost:8181/ratatoskr/image/165987aklre6");
+        addFollower(datasource, actorId, anotherActorId);
 
         var followers1 = assertjConnection
             .request("select * from followers where followed=? and follower=?")
@@ -139,8 +131,10 @@ class RatatoskrLiquibaseTest {
         assertThat(ex.getMessage()).startsWith("java.lang.Exception");
     }
 
-    private void addAccounts(Connection connection) throws Exception {
-        addAccount(connection, "admin");
+    private void addAccounts(DataSource datasource) throws Exception {
+        try(var connection = datasource.getConnection()) {
+            addAccount(connection, "admin");
+        }
     }
 
     private int addAccount(Connection connection, String username) throws Exception {
@@ -167,30 +161,34 @@ class RatatoskrLiquibaseTest {
         return -1;
     }
 
-    private int addActor(Connection connection, String id, String preferredUsername, String name, String summary, String inbox, String following, String followers, String liked, String icon) throws Exception {
-        var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try(var statement = connection.prepareStatement(sql)) {
-            statement.setString(1, id);
-            statement.setString(2, preferredUsername);
-            statement.setString(3, name);
-            statement.setString(4, summary);
-            statement.setString(5, inbox);
-            statement.setString(6, following);
-            statement.setString(7, followers);
-            statement.setString(8, liked);
-            statement.setString(9, icon);
-            statement.executeUpdate();
-        }
+    private int addActor(DataSource datasource, String id, String preferredUsername, String name, String summary, String inbox, String following, String followers, String liked, String icon) throws Exception {
+        try(var connection = datasource.getConnection()) {
+            var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, id);
+                statement.setString(2, preferredUsername);
+                statement.setString(3, name);
+                statement.setString(4, summary);
+                statement.setString(5, inbox);
+                statement.setString(6, following);
+                statement.setString(7, followers);
+                statement.setString(8, liked);
+                statement.setString(9, icon);
+                statement.executeUpdate();
+            }
 
-        return findActorId(connection, id);
+            return findActorId(connection, id);
+        }
     }
 
-    private void addFollower(Connection connection, int actorId, int anotherActorId) throws Exception {
-        var sql = "insert into followers (followed, follower) values (?, ?)";
-        try(var statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, actorId);
-            statement.setInt(2, anotherActorId);
-            statement.executeUpdate();
+    private void addFollower(DataSource datasource, int actorId, int anotherActorId) throws Exception {
+        try(var connection = datasource.getConnection()) {
+            var sql = "insert into followers (followed, follower) values (?, ?)";
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, actorId);
+                statement.setInt(2, anotherActorId);
+                statement.executeUpdate();
+            }
         }
     }
 
