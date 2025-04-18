@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 package no.priv.bang.ratatoskr.web.security;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.mgt.RealmSecurityManager;
@@ -39,6 +38,7 @@ class RatatoskrShiroFilterTest {
         session = new MemorySessionDAO();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testAuthenticate() {
         var filter = new RatatoskrShiroFilter();
@@ -48,7 +48,7 @@ class RatatoskrShiroFilterTest {
         var securitymanager = filter.getSecurityManager();
         var token = new UsernamePasswordToken("jad", "1ad".toCharArray());
         var info = securitymanager.authenticate(token);
-        assertEquals(1, info.getPrincipals().asList().size());
+        assertThat(info.getPrincipals().asList()).hasSize(1);
     }
 
     private static Realm getRealmFromIniFile() {
