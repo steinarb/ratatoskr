@@ -15,7 +15,9 @@
  */
 package no.priv.bang.ratatoskr.web.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.mgt.RealmSecurityManager;
@@ -26,6 +28,8 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.web.env.IniWebEnvironment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import no.priv.bang.authservice.definitions.CipherKeyService;
 
 class RatatoskrShiroFilterTest {
 
@@ -41,9 +45,11 @@ class RatatoskrShiroFilterTest {
     @SuppressWarnings("unchecked")
     @Test
     void testAuthenticate() {
+        var cipherKeyService = mock(CipherKeyService.class);
         var filter = new RatatoskrShiroFilter();
         filter.setRealm(realm);
         filter.setSession(session);
+        filter.setCipherKeyservice(cipherKeyService);
         filter.activate();
         var securitymanager = filter.getSecurityManager();
         var token = new UsernamePasswordToken("jad", "1ad".toCharArray());
