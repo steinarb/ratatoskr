@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steinar Bang
+ * Copyright 2023-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@ package no.priv.bang.ratatoskr.backend;
 
 import static no.priv.bang.ratatoskr.services.RatatoskrConstants.*;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +43,9 @@ import org.osgi.service.log.Logger;
 
 import no.priv.bang.ratatoskr.asvocabulary.ActivityStreamObject;
 import no.priv.bang.ratatoskr.asvocabulary.Actor;
+import no.priv.bang.ratatoskr.asvocabulary.Article;
+import no.priv.bang.ratatoskr.asvocabulary.Group;
+import no.priv.bang.ratatoskr.asvocabulary.Like;
 import no.priv.bang.ratatoskr.asvocabulary.Link;
 import no.priv.bang.ratatoskr.asvocabulary.LinkOrObject;
 import no.priv.bang.ratatoskr.asvocabulary.Person;
@@ -137,6 +144,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         return accounts;
     }
 
+    @Override
     public Optional<Actor> addActor(Actor person) {
         var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try(var connection = datasource.getConnection()) {
@@ -161,23 +169,13 @@ public class RatatoskrServiceProvider implements RatatoskrService {
 
     @Override
     public Optional<Actor> findActor(String id) {
-        var sql = "select preferred_username, name, summary, inbox, following, followers, liked, icon from actors where id=?";
+        var sql = "select id, preferred_username, name, summary, inbox, following, followers, liked, icon from actors where id=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
                 statement.setString(1, id);
                 try(var results = statement.executeQuery()) {
                     while(results.next()) {
-                        return Optional.of(Person.with()
-                            .id(id)
-                            .preferredUsername(results.getString("preferred_username"))
-                            .name(results.getString("name"))
-                            .summary(results.getString("summary"))
-                            .inbox(results.getString("inbox"))
-                            .following(results.getString("following"))
-                            .followers(results.getString("followers"))
-                            .liked(results.getString("liked"))
-                            .icon(results.getString("icon"))
-                            .build());
+                        return unpackPerson(results);
                     }
                 }
             }
@@ -186,6 +184,235 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<Group> addGroup(Group group) {
+        try(var connection = datasource.getConnection()) {
+            var sql = "insert into groups (name) values (?)";
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, group.name());
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+
+        return findGroup(group.name());
+    }
+
+    @Override
+    public Optional<Article> addArticle(Article article) {
+        var attributedToActorId = findActorId(findId(article.attributedTo()));
+        var sql = "insert into articles (id, name, content, attributed_to) values (?, ?, ?, ?)";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, article.id());
+                statement.setString(2, article.name());
+                statement.setString(3, article.content());
+                statement.setInt(4, attributedToActorId);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to add article", e);
+        }
+
+        return findArticle(article.id());
+    }
+
+    @Override
+    public Optional<Article> findArticle(String id) {
+        var sql = "select a.id, a.name, a.content, t.id as attributed_to from articles a join actors t on a.attributed_to=t.actor_id where a.id=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, id);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        return unpackArticle(results);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to fetch article", e);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Actor> findActorWithUsername(String username) {
+        var sql = "select id, preferred_username, name, summary, inbox, following, followers, liked, icon from actors where preferred_username=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        return unpackPerson(results);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to find actor using username", e);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Actor> findFollowersWithUsername(String username) {
+        var list = new ArrayList<Actor>();
+        var sql = "select a2.id, a2.preferred_username, a2.name, a2.summary, a2.inbox, a2.following, a2.followers, a2.liked, a2.icon from actors a join followers f on a.actor_id=f.followed join actors a2 on f.follower=a2.actor_id where a.preferred_username=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        unpackPerson(results).ifPresent(list::add);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error fetching followers list", e);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<Actor> addFollowerToUsername(String username, String id) {
+        var sql = "insert into followers (followed, follower) values ((select actor_id from actors where preferred_username=?), (select actor_id from actors where id=?))";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                statement.setString(2, id);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error adding to followers list", e);
+        }
+
+        return findFollowersWithUsername(username);
+    }
+
+    @Override
+    public List<Actor> findFollowingWithUsername(String username) {
+        var list = new ArrayList<Actor>();
+        var sql = "select a2.id, a2.preferred_username, a2.name, a2.summary, a2.inbox, a2.following, a2.followers, a2.liked, a2.icon from actors a join following f on a.actor_id=f.followed join actors a2 on f.follower=a2.actor_id where a.preferred_username=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        unpackPerson(results).ifPresent(list::add);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error fetching following list", e);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<Actor> addFollowedToUsername(String username, String id) {
+        var sql = "insert into following (followed, follower) values ((select actor_id from actors where preferred_username=?), (select actor_id from actors where id=?))";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                statement.setString(2, id);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error adding to following list", e);
+        }
+
+        return findFollowingWithUsername(username);
+    }
+
+    @Override
+    public List<Like> findLikedWithUsername(String username) {
+        var list = new ArrayList<Like>();
+        var sql = "select l.id, l.summary, g.name as audience, a.id as actor, t.id as article, published from likes l join groups g on l.audience=g.group_id join actors a on l.actor=a.actor_id join articles t on l.article=t.article_id where a.preferred_username=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        unpackLike(results).ifPresent(list::add);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error fetching following list", e);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<Like> addLikeToUsername(String username, Like like) {
+        var sql = "insert into likes (id, summary, audience, actor, article, published) values (?, ?, (select group_id from groups where name=?), (select actor_id from actors where preferred_username=?), (select article_id from articles where id=?), ?)";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, like.id());
+                statement.setString(2, like.summary());
+                statement.setString(3, findName(like.audience()));
+                statement.setString(4, username);
+                statement.setString(5, findHref(like.target()));
+                statement.setTimestamp(6, like.published() == null ? null : Timestamp.from(like.published().toInstant()));
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to add like", e);
+        }
+
+        return findLikedWithUsername(username);
+    }
+
+    @Override
+    public List<Like> userLikeArticle(String username, Article article, Group audience, String localWebContext) {
+        try(var connection = datasource.getConnection()) {
+            Integer likeId = null;
+            createNewLike(connection, username, article, audience);
+            likeId = findLikeIdOfMostRecentlyCreatedLike(connection);
+            updateLikesToSetIdOfCreatedLike(connection, username, likeId, localWebContext);
+        } catch (SQLException e) {
+            throw new RatatoskrException("Error liking article for user", e);
+        }
+
+        return findLikedWithUsername(username);
+    }
+
+    private void createNewLike(Connection connection, String username, Article article, Group audience) throws SQLException {
+        try(var statement = connection.prepareStatement("insert into likes (actor, article, audience) values ((select actor_id from actors where preferred_username=?), (select article_id from articles where id=?), (select group_id from groups where name=?))")) {
+            statement.setString(1, username);
+            statement.setString(2, article.id());
+            statement.setString(3, audience.name());
+            statement.executeUpdate();
+        }
+    }
+
+    private Integer findLikeIdOfMostRecentlyCreatedLike(Connection connection) throws SQLException {
+        Integer likeId = null;
+        try(var statement = connection.createStatement()) {
+            try(var results = statement.executeQuery("select like_id from likes order by like_id desc")) {
+                if (results.next()) {
+                    likeId = results.getInt("like_id");
+                }
+            }
+        }
+
+        return likeId;
+    }
+
+    private void updateLikesToSetIdOfCreatedLike(Connection connection, String username, Integer likeId, String localWebContext) throws SQLException {
+        var id = localWebContext + "liked/" + username + "/" + Optional.ofNullable(likeId).orElse(0).toString();
+        try(var statement = connection.prepareStatement("update likes set id=? where like_id=?")) {
+            statement.setString(1, id);
+            statement.setInt(2, likeId);
+            statement.executeUpdate();
+        }
     }
 
     @Override
@@ -329,6 +556,42 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         return -1;
     }
 
+    int findActorId(String id) {
+        try(var connection = datasource.getConnection()) {
+            var sql = "select actor_id from actors where id=?";
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, id);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        return results.getInt("actor_id");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to find actors.actor_id", e);
+        }
+
+        return -1;
+    }
+
+    Optional<Group> findGroup(String name) {
+        var sql = "select name from groups where name=?";
+        try(var connection = datasource.getConnection()) {
+            try(var statement = connection.prepareStatement(sql)) {
+                statement.setString(1, name);
+                try(var results = statement.executeQuery()) {
+                    while(results.next()) {
+                        return unpackGroup(results);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RatatoskrException("Unable to fetch group", e);
+        }
+
+        return Optional.empty();
+    }
+
     private Integer findCounterIncrementStep(Connection connection, String username) throws SQLException {
         try(var statement = connection.prepareStatement("select counter_increment_step from counter_increment_steps c join ratatoskr_accounts a on c.account_id=a.account_id where a.username=?")) {
             statement.setString(1, username);
@@ -372,9 +635,79 @@ public class RatatoskrServiceProvider implements RatatoskrService {
             .forEach(r ->  useradmin.addRole(Role.with().id(-1).rolename(r.getKey()).description(r.getValue()).build()));
     }
 
-    private String findHref(LinkOrObject icon) {
-        return switch (icon) {
+    private Optional<Actor> unpackPerson(ResultSet results) throws SQLException {
+        return Optional.of(Person.with()
+            .id(stringOrNull(results, "id"))
+            .preferredUsername(results.getString("preferred_username"))
+            .name(results.getString("name"))
+            .summary(results.getString("summary"))
+            .inbox(results.getString("inbox"))
+            .following(results.getString("following"))
+            .followers(results.getString("followers"))
+            .liked(results.getString("liked"))
+            .icon(results.getString("icon"))
+            .build());
+    }
+
+    private Optional<Group> unpackGroup(ResultSet results) throws SQLException {
+        return Optional.of(Group.with()
+            .name(results.getString("name"))
+            .build());
+    }
+
+    private Optional<Article> unpackArticle(ResultSet results) throws SQLException {
+        return Optional.of(Article.with()
+            .id(stringOrNull(results, "id"))
+            .name(results.getString("name"))
+            .content(results.getString("content"))
+            .attributedTo(Link.with().href(results.getString("attributed_to")).build())
+            .build());
+    }
+
+    private Optional<Like> unpackLike(ResultSet results) throws SQLException {
+        return Optional.of(Like.with()
+            .id(stringOrNull(results, "id"))
+            .summary(results.getString("summary"))
+            .audience(Group.with().name(results.getString("audience")).build())
+            .actor(createLinkFromString(results, "actor"))
+            .target(createLinkFromString(results, "article"))
+            .published(zonedDateTimeOrNull(results, "published"))
+            .build());
+    }
+
+    private Link createLinkFromString(ResultSet results, String columnName) throws SQLException {
+        return Link.with().href(results.getString(columnName)).build();
+    }
+
+    private String stringOrNull(ResultSet results, String columnName) throws SQLException {
+        var returnValue = results.getString(columnName);
+        return results.wasNull() ? null : returnValue;
+    }
+
+    ZonedDateTime zonedDateTimeOrNull(ResultSet results, String columnName) throws SQLException {
+        var timestamp = results.getTimestamp(columnName);
+        return results.wasNull() ? null : ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.of("UTC"));
+    }
+
+    String findId(LinkOrObject linkOrObject) {
+        return switch(linkOrObject) {
+            case ActivityStreamObject asobject -> asobject.id();
+            case Link aslink -> aslink.href();
+            default -> throw new RatatoskrException("Did not get the expected type when parsing");
+        };
+    }
+
+    String findHref(LinkOrObject linkOrObject) {
+        return linkOrObject == null ? null : switch (linkOrObject) {
             case Link link -> link.href();
+            default -> null;
+        };
+    }
+
+    String findName(LinkOrObject linkOrObject) {
+        return linkOrObject == null ? null : switch (linkOrObject) {
+            case Link link -> link.name();
+            case ActivityStreamObject activityStreamObject -> activityStreamObject.name();
             default -> null;
         };
     }

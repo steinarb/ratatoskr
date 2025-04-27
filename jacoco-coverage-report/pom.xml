@@ -41,6 +41,11 @@ under the License.
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
+            <artifactId>ratatoskr.asvocabulary</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.services</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -58,6 +63,11 @@ under the License.
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.web.api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.priv.bang.ratatoskr</groupId>
+            <artifactId>ratatoskr.web.as</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
