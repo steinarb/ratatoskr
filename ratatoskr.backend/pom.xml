@@ -33,26 +33,22 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.asvocabulary</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.asvocabulary</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.services</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.services</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
@@ -95,13 +91,11 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.db.liquibase.test</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.db.liquibase</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -30,35 +30,30 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.db.liquibase</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.db.liquibase.test</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.db.liquibase.production</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.services</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.backend</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
@@ -72,21 +67,18 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.web.security</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.web.api</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.web.frontend</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

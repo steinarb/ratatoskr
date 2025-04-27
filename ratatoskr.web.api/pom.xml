@@ -33,39 +33,33 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.asvocabulary</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.asvocabulary</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.services</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.services</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.backend</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.ratatoskr</groupId>
             <artifactId>ratatoskr.web.security</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
