@@ -170,16 +170,18 @@ class RatatoskrLiquibaseTest {
 
     @Test
     void testCreateSchemaAndFailOnConnectionClose() throws Exception {
-        var connection = spy(createConnection("ratatoskr2"));
-        doNothing().when(connection).setAutoCommit(anyBoolean());
-        doThrow(Exception.class).when(connection).close();
+        try (var realConnection = createConnection("ratatoskr2")) {
+            var connection = spy(realConnection);
+            doNothing().when(connection).setAutoCommit(anyBoolean());
+            doThrow(Exception.class).when(connection).close(); // Note: the underlying connection of the spy must be closed after the test
 
-        var ratatoskrLiquibase = new RatatoskrLiquibase();
+            var ratatoskrLiquibase = new RatatoskrLiquibase();
 
-        var ex = assertThrows(
-            LiquibaseException.class,
-            () -> ratatoskrLiquibase.createInitialSchema(connection));
-        assertThat(ex.getMessage()).startsWith("java.lang.Exception");
+            var ex = assertThrows(
+                LiquibaseException.class,
+                () -> ratatoskrLiquibase.createInitialSchema(connection));
+            assertThat(ex.getMessage()).startsWith("java.lang.Exception");
+        }
     }
 
     private void addAccounts(DataSource datasource) throws Exception {
