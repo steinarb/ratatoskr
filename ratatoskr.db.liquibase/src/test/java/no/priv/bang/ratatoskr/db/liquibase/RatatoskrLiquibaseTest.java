@@ -51,6 +51,9 @@ class RatatoskrLiquibaseTest {
         var activityTypes = assertjConnection.table("activity_types").build();
         assertThat(activityTypes).exists().hasNumberOfRows(12);
 
+        var asobjectTypes = assertjConnection.table("asobject_types").build();
+        assertThat(asobjectTypes).exists().hasNumberOfRows(22);
+
         var accounts1 = assertjConnection.table("ratatoskr_accounts").build();
         assertThat(accounts1).exists().isEmpty();
 

@@ -55,6 +55,20 @@ under the License.
         <loadData file="ratatoskr-db-changelog/initial-activity-types.csv" tableName="activity_types" />
     </changeSet>
 
+    <changeSet author="sb" id="ratatoskr-1.0.0-asobject-types-table">
+        <createTable tableName="asobject_types">
+            <column autoIncrement="true" name="asobject_type_id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="asobject_type_primary_key"/>
+            </column>
+            <column name="asobject_type_name" type="VARCHAR(64)" />
+            <column name="activity" type="BOOLEAN" defaultValueBoolean="false" />
+        </createTable>
+    </changeSet>
+
+    <changeSet author="sb" id="ratatoskr-1.0.0-populate-asobject-types-table">
+        <loadData file="ratatoskr-db-changelog/initial-asobject-types.csv" tableName="asobject_types" />
+    </changeSet>
+
     <changeSet author="sb" id="ratatoskr-1.0.0-actors">
         <createTable tableName="actors">
             <column autoIncrement="true" name="actor_id" type="INTEGER">
