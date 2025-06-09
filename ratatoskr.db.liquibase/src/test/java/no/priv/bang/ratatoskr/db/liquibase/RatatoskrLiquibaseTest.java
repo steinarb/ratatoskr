@@ -48,6 +48,9 @@ class RatatoskrLiquibaseTest {
 
         ratatoskrLiquibase.createInitialSchema(datasource.getConnection());
 
+        var asobjectTypes = assertjConnection.table("asobject_types").build();
+        assertThat(asobjectTypes).exists().hasNumberOfRows(22);
+
         var accounts1 = assertjConnection.table("ratatoskr_accounts").build();
         assertThat(accounts1).exists().isEmpty();
 
@@ -167,16 +170,18 @@ class RatatoskrLiquibaseTest {
 
     @Test
     void testCreateSchemaAndFailOnConnectionClose() throws Exception {
-        var connection = spy(createConnection("ratatoskr2"));
-        doNothing().when(connection).setAutoCommit(anyBoolean());
-        doThrow(Exception.class).when(connection).close();
+        try (var realConnection = createConnection("ratatoskr2")) {
+            var connection = spy(realConnection);
+            doNothing().when(connection).setAutoCommit(anyBoolean());
+            doThrow(Exception.class).when(connection).close(); // Note: the underlying connection of the spy must be closed after the test
 
-        var ratatoskrLiquibase = new RatatoskrLiquibase();
+            var ratatoskrLiquibase = new RatatoskrLiquibase();
 
-        var ex = assertThrows(
-            LiquibaseException.class,
-            () -> ratatoskrLiquibase.createInitialSchema(connection));
-        assertThat(ex.getMessage()).startsWith("java.lang.Exception");
+            var ex = assertThrows(
+                LiquibaseException.class,
+                () -> ratatoskrLiquibase.createInitialSchema(connection));
+            assertThat(ex.getMessage()).startsWith("java.lang.Exception");
+        }
     }
 
     private void addAccounts(DataSource datasource) throws Exception {
