@@ -575,6 +575,22 @@ class RatatoskrServiceProviderTest {
     }
 
     @Test
+    void testFindLikedWithUsernameWithDbError() throws Exception {
+        var logservice = new MockLogService();
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        var mockDatasource = mock(DataSource.class);
+        when(mockDatasource.getConnection()).thenThrow(SQLException.class);
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var username = "johnd";
+        assertThrows(RatatoskrException.class, () -> provider.findLikedWithUsername(username));
+    }
+
+    @Test
     void testAddLikes() {
         var logservice = new MockLogService();
         var useradmin = mock(UserManagementService.class);
@@ -630,6 +646,23 @@ class RatatoskrServiceProviderTest {
         // Moved here from its own test to ensure that a like is present
         var likes2 = provider.findLikedWithUsername(username);
         assertThat(likes2).isNotEmpty();
+    }
+
+    @Test
+    void testUserLikeArticleWithDbError() throws Exception {
+        var logservice = new MockLogService();
+        var mockDatasource = mock(DataSource.class);
+        when(mockDatasource.getConnection()).thenThrow(SQLException.class);
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var article = Article.with().build();
+        var group = Group.with().build();
+        assertThrows(RatatoskrException.class, () -> provider.userLikeArticle("dummy", article, group, null));
     }
 
     @Test
