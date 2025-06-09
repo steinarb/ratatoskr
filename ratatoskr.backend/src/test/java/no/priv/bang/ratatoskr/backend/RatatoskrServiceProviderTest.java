@@ -712,6 +712,68 @@ class RatatoskrServiceProviderTest {
     }
 
     @Test
+    void testListInbox() {
+        var logservice = new MockLogService();
+        var mockDatasource = mock(DataSource.class);
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var actor = Person.with().build();
+        assertThat(provider.listInbox(actor)).isEmpty();
+    }
+
+    @Test
+    void testPostToInbox() {
+        var logservice = new MockLogService();
+        var mockDatasource = mock(DataSource.class);
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var actor = Person.with().build();
+        var message = Article.with().build();
+        assertThat(provider.postToInbox(actor, message)).isEmpty();
+    }
+
+    @Test
+    void testListOutbox() {
+        var logservice = new MockLogService();
+        var mockDatasource = mock(DataSource.class);
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var actor = Person.with().build();
+        assertThat(provider.listOutbox(actor)).isEmpty();
+    }
+
+    @Test
+    void testPostToOutbox() {
+        var logservice = new MockLogService();
+        var mockDatasource = mock(DataSource.class);
+        var useradmin = mock(UserManagementService.class);
+        var provider = new RatatoskrServiceProvider();
+        provider.setLogservice(logservice);
+        provider.setDatasource(mockDatasource);
+        provider.setUseradmin(useradmin);
+        provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
+
+        var actor = Person.with().build();
+        var message = Article.with().build();
+        assertThat(provider.postToOutbox(actor, message)).isEmpty();
+    }
+
+    @Test
     void testIncrementAndDecrement() {
         var logservice = new MockLogService();
         var useradmin = mock(UserManagementService.class);
