@@ -71,6 +71,8 @@ public enum ActivityStreamObjectType {
     Tombstone(Names.TOMBSTONE),
     Link(Names.LINK),
     Mention(Names.MENTION),
+    Hashtag(Names.HASHTAG),
+    Emoji(Names.EMOJI),
     @JsonEnumDefaultValue Untyped(Names.UNTYPED);
 
     public class Names {
@@ -127,6 +129,8 @@ public enum ActivityStreamObjectType {
         public static final String TOMBSTONE = "Tombstone";
         public static final String LINK = "Link";
         public static final String MENTION = "Mention";
+        public static final String HASHTAG = "Hashtag";
+        public static final String EMOJI = "Emoji";
         public static final String UNTYPED = "Untyped";
 
         private Names() {}
