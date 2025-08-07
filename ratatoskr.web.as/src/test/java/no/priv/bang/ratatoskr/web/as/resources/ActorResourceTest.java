@@ -28,8 +28,8 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.uri.internal.JerseyUriBuilder;
 import org.junit.jupiter.api.Test;
 
-import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
 
 class ActorResourceTest {
 
@@ -49,7 +49,7 @@ class ActorResourceTest {
 
         var resource = new ActorResource();
         var ratatoskr = mock(RatatoskrService.class);
-        when(ratatoskr.findActorWithUsername(anyString())).thenReturn(Optional.of(person));
+        when(ratatoskr.findPersonWithUsername(anyString())).thenReturn(Optional.of(person));
         resource.ratatoskr = ratatoskr;
         UriInfo uriInfo = mock(UriInfo.class);
         var baseUri = URI.create("http://localhost:8181/ratatoskr/as");

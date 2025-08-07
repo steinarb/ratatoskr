@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Steinar Bang
+ * Copyright 2023-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 package no.priv.bang.ratatoskr.web.as;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,18 +42,18 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
 
-import no.priv.bang.ratatoskr.asvocabulary.Actor;
+import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
+import no.priv.bang.osgiservice.users.UserManagementService;
 import no.priv.bang.ratatoskr.asvocabulary.Article;
-import no.priv.bang.ratatoskr.asvocabulary.Collection;
-import no.priv.bang.ratatoskr.asvocabulary.Group;
-import no.priv.bang.ratatoskr.asvocabulary.Like;
 import no.priv.bang.ratatoskr.asvocabulary.Link;
-import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.backend.RatatoskrServiceProvider;
 import no.priv.bang.ratatoskr.db.liquibase.test.RatatoskrTestDbLiquibaseRunner;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
-import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
-import no.priv.bang.osgiservice.users.UserManagementService;
+import no.priv.bang.ratatoskr.services.activitypub.ActivityCollection;
+import no.priv.bang.ratatoskr.services.activitypub.Like;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
+import no.priv.bang.ratatoskr.services.activitypub.PersonCollection;
+import no.priv.bang.ratatoskr.services.activitypub.Status;
 
 class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
@@ -90,7 +91,7 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .liked("https://kenzoishii.example.com/liked.json")
             .icon("https://kenzoishii.example.com/image/165987aklre4")
             .build();
-        ratatoskr.addActor(kenzoishii);
+        ratatoskr.addPerson(kenzoishii);
         var sally = Person.with()
             .id("https://sally.example.com")
             .preferredUsername("sally")
@@ -102,7 +103,7 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .liked("https://sally.example.com/liked.json")
             .icon("http://localhost:8181/ratatoskr/image/165987aklre6")
             .build();
-        ratatoskr.addActor(sally);
+        ratatoskr.addPerson(sally);
         var johnd = Person.with()
             .id("http://localhost:8181/ratatoskr/as/actor/johnd")
             .preferredUsername("johnd")
@@ -110,7 +111,7 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .summary("The common man")
             .icon("http://localhost:8181/ratatoskr/image/165987aklre4")
             .build();
-        ratatoskr.addActor(johnd);
+        ratatoskr.addPerson(johnd);
         ratatoskr.addFollowerToUsername(johnd.preferredUsername(), kenzoishii.id());
         ratatoskr.addFollowerToUsername(johnd.preferredUsername(), sally.id());
         ratatoskr.addFollowedToUsername(johnd.preferredUsername(), kenzoishii.id());
@@ -125,12 +126,10 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .attributedTo(Link.with().href(sally.id()).build())
             .build();
         ratatoskr.addArticle(article);
-        var group = ratatoskr.addGroup(Group.with().name("Project XYZ Working Group").build()).get();
         var likeInput = Like.with()
             .summary("John liked Sally's note")
-            .audience(group)
-            .actor(Link.with().href("http://localhost:8181/ratatoskr/as/actor/johnd").build())
-            .target(Link.with().href(docId).build())
+            .authoredBy(Person.with().id("http://localhost:8181/ratatoskr/as/actor/johnd").build())
+            .inReplyTo(Status.with().id(docId).url(docId).build())
             .build();
         like = ratatoskr.addLikeToUsername(johnd.preferredUsername(), likeInput).get(0);
     }
@@ -150,7 +149,7 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
-        var actor = mapper.readValue(response.getOutputStreamBinaryContent(), Actor.class);
+        var actor = mapper.readValue(response.getOutputStreamBinaryContent(), Person.class);
         var johnd = Person.with()
             .id("http://localhost:8181/ratatoskr/as/actor/johnd")
             .preferredUsername("johnd")
@@ -162,7 +161,7 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
             .liked("http://localhost:8181/ratatoskr/as/liked/johnd")
             .icon("http://localhost:8181/ratatoskr/image/165987aklre4")
             .build();
-        assertThat(actor).isEqualTo(johnd);
+        assertThat(actor).usingRecursiveComparison().isEqualTo(johnd);
     }
 
     @Test
@@ -197,12 +196,12 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
-        var followers = mapper.readValue(response.getOutputStreamBinaryContent(), Collection.class);
-        var follower1 = ratatoskr.findActor("https://kenzoishii.example.com").get();
-        var follower2 = ratatoskr.findActor("https://sally.example.com").get();
+        var followers = mapper.readValue(response.getOutputStreamBinaryContent(), PersonCollection.class);
+        var follower1 = ratatoskr.findPerson("https://kenzoishii.example.com").get();
+        var follower2 = ratatoskr.findPerson("https://sally.example.com").get();
         assertThat(followers.id()).isEqualTo("http://localhost:8181/ratatoskr/as/followers/johnd");
         assertThat(followers.totalItems()).isEqualTo(2);
-        assertThat(followers.items()).hasSize(2);
+        assertThat(followers.orderedItems()).hasSize(2);
         assertThat(followers.current()).isEqualTo(follower1);
         assertThat(followers.first()).isEqualTo(follower1);
         assertThat(followers.last()).isEqualTo(follower2);
@@ -223,12 +222,12 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
-        var followers = mapper.readValue(response.getOutputStreamBinaryContent(), Collection.class);
-        var follower1 = ratatoskr.findActor("https://kenzoishii.example.com").get();
-        var follower2 = ratatoskr.findActor("https://sally.example.com").get();
+        var followers = mapper.readValue(response.getOutputStreamBinaryContent(), PersonCollection.class);
+        var follower1 = ratatoskr.findPerson("https://kenzoishii.example.com").get();
+        var follower2 = ratatoskr.findPerson("https://sally.example.com").get();
         assertThat(followers.id()).isEqualTo("http://localhost:8181/ratatoskr/as/following/johnd");
         assertThat(followers.totalItems()).isEqualTo(2);
-        assertThat(followers.items()).hasSize(2);
+        assertThat(followers.orderedItems()).hasSize(2);
         assertThat(followers.current()).isEqualTo(follower1);
         assertThat(followers.first()).isEqualTo(follower1);
         assertThat(followers.last()).isEqualTo(follower2);
@@ -251,10 +250,10 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
-        var liked = mapper.readValue(response.getOutputStreamBinaryContent(), Collection.class);
+        var liked = mapper.readValue(response.getOutputStreamBinaryContent(), ActivityCollection.class);
         assertThat(liked.id()).isEqualTo("http://localhost:8181/ratatoskr/as/liked/johnd");
         assertThat(liked.totalItems()).isEqualTo(1);
-        assertThat(liked.items()).hasSize(1);
+        assertThat(liked.orderedItems()).hasSize(1);
         assertThat(liked.current()).isEqualTo(like);
         assertThat(liked.first()).isEqualTo(like);
         assertThat(liked.last()).isEqualTo(like);

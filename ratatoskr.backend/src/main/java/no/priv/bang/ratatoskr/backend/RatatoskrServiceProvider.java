@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Steinar Bang
+ * Copyright 2023-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,15 +42,15 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.log.Logger;
 
 import no.priv.bang.ratatoskr.asvocabulary.ActivityStreamObject;
-import no.priv.bang.ratatoskr.asvocabulary.Actor;
 import no.priv.bang.ratatoskr.asvocabulary.Article;
 import no.priv.bang.ratatoskr.asvocabulary.Group;
-import no.priv.bang.ratatoskr.asvocabulary.Like;
 import no.priv.bang.ratatoskr.asvocabulary.Link;
 import no.priv.bang.ratatoskr.asvocabulary.LinkOrObject;
-import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.services.RatatoskrException;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.Like;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
+import no.priv.bang.ratatoskr.services.activitypub.Status;
 import no.priv.bang.ratatoskr.services.beans.Account;
 import no.priv.bang.ratatoskr.services.beans.CounterBean;
 import no.priv.bang.ratatoskr.services.beans.CounterIncrementStepBean;
@@ -145,7 +145,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public Optional<Actor> addActor(Actor person) {
+    public Optional<Person> addPerson(Person person) {
         var sql = "insert into actors (id, preferred_username, name, summary, inbox, following, followers, liked, icon) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -157,18 +157,18 @@ public class RatatoskrServiceProvider implements RatatoskrService {
                 statement.setString(6, person.following());
                 statement.setString(7, person.followers());
                 statement.setString(8, person.liked());
-                statement.setString(9, findHref(person.icon()));
+                statement.setString(9, person.icon());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
             return Optional.empty();
         }
 
-        return findActor(person.id());
+        return findPerson(person.id());
     }
 
     @Override
-    public Optional<Actor> findActor(String id) {
+    public Optional<Person> findPerson(String id) {
         var sql = "select id, preferred_username, name, summary, inbox, following, followers, liked, icon from actors where id=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -240,7 +240,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public Optional<Actor> findActorWithUsername(String username) {
+    public Optional<Person> findPersonWithUsername(String username) {
         var sql = "select id, preferred_username, name, summary, inbox, following, followers, liked, icon from actors where preferred_username=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -259,8 +259,8 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public List<Actor> findFollowersWithUsername(String username) {
-        var list = new ArrayList<Actor>();
+    public List<Person> findFollowersWithUsername(String username) {
+        var list = new ArrayList<Person>();
         var sql = "select a2.id, a2.preferred_username, a2.name, a2.summary, a2.inbox, a2.following, a2.followers, a2.liked, a2.icon from actors a join followers f on a.actor_id=f.followed join actors a2 on f.follower=a2.actor_id where a.preferred_username=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -279,7 +279,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public List<Actor> addFollowerToUsername(String username, String id) {
+    public List<Person> addFollowerToUsername(String username, String id) {
         var sql = "insert into followers (followed, follower) values ((select actor_id from actors where preferred_username=?), (select actor_id from actors where id=?))";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -295,8 +295,8 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public List<Actor> findFollowingWithUsername(String username) {
-        var list = new ArrayList<Actor>();
+    public List<Person> findFollowingWithUsername(String username) {
+        var list = new ArrayList<Person>();
         var sql = "select a2.id, a2.preferred_username, a2.name, a2.summary, a2.inbox, a2.following, a2.followers, a2.liked, a2.icon from actors a join following f on a.actor_id=f.followed join actors a2 on f.follower=a2.actor_id where a.preferred_username=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -315,7 +315,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public List<Actor> addFollowedToUsername(String username, String id) {
+    public List<Person> addFollowedToUsername(String username, String id) {
         var sql = "insert into following (followed, follower) values ((select actor_id from actors where preferred_username=?), (select actor_id from actors where id=?))";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
@@ -333,7 +333,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     @Override
     public List<Like> findLikedWithUsername(String username) {
         var list = new ArrayList<Like>();
-        var sql = "select l.id, l.summary, g.name as audience, a.id as actor, t.id as article, published from likes l join groups g on l.audience=g.group_id join actors a on l.actor=a.actor_id join articles t on l.article=t.article_id where a.preferred_username=?";
+        var sql = "select l.id, l.summary, g.name as audience, a.id as actor, t.id as article, published from likes l left join groups g on l.audience=g.group_id join actors a on l.actor=a.actor_id join articles t on l.article=t.article_id where a.preferred_username=?";
         try(var connection = datasource.getConnection()) {
             try(var statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
@@ -357,9 +357,9 @@ public class RatatoskrServiceProvider implements RatatoskrService {
             try(var statement = connection.prepareStatement(sql)) {
                 statement.setString(1, like.id());
                 statement.setString(2, like.summary());
-                statement.setString(3, findName(like.audience()));
+                statement.setString(3, like.authoredBy().name());
                 statement.setString(4, username);
-                statement.setString(5, findHref(like.target()));
+                statement.setString(5, Optional.ofNullable(like.inReplyTo()).map(Status::id).orElse(null));
                 statement.setTimestamp(6, like.published() == null ? null : Timestamp.from(like.published().toInstant()));
                 statement.executeUpdate();
             }
@@ -416,22 +416,22 @@ public class RatatoskrServiceProvider implements RatatoskrService {
     }
 
     @Override
-    public List<ActivityStreamObject> listInbox(Actor actor) {
+    public List<ActivityStreamObject> listInbox(Person actor) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<ActivityStreamObject> postToInbox(Actor actor, ActivityStreamObject message) {
+    public List<ActivityStreamObject> postToInbox(Person actor, ActivityStreamObject message) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<ActivityStreamObject> listOutbox(Actor actor) {
+    public List<ActivityStreamObject> listOutbox(Person actor) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<ActivityStreamObject> postToOutbox(Actor actor, ActivityStreamObject message) {
+    public List<ActivityStreamObject> postToOutbox(Person actor, ActivityStreamObject message) {
         return Collections.emptyList();
     }
 
@@ -635,7 +635,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
             .forEach(r ->  useradmin.addRole(Role.with().id(-1).rolename(r.getKey()).description(r.getValue()).build()));
     }
 
-    private Optional<Actor> unpackPerson(ResultSet results) throws SQLException {
+    private Optional<Person> unpackPerson(ResultSet results) throws SQLException {
         return Optional.of(Person.with()
             .id(stringOrNull(results, "id"))
             .preferredUsername(results.getString("preferred_username"))
@@ -668,15 +668,10 @@ public class RatatoskrServiceProvider implements RatatoskrService {
         return Optional.of(Like.with()
             .id(stringOrNull(results, "id"))
             .summary(results.getString("summary"))
-            .audience(Group.with().name(results.getString("audience")).build())
-            .actor(createLinkFromString(results, "actor"))
-            .target(createLinkFromString(results, "article"))
+            .authoredBy(Person.with().id(results.getString("actor")).build())
+            .inReplyTo(Status.with().id(results.getString("article")).build())
             .published(zonedDateTimeOrNull(results, "published"))
             .build());
-    }
-
-    private Link createLinkFromString(ResultSet results, String columnName) throws SQLException {
-        return Link.with().href(results.getString(columnName)).build();
     }
 
     private String stringOrNull(ResultSet results, String columnName) throws SQLException {

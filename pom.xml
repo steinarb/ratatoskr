@@ -132,6 +132,13 @@ under the License.
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>no.priv.bang.jdbc</groupId>
+                <artifactId>jdbc-bom</artifactId>
+                <version>${bang-jdbc-utils.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>no.priv.bang.authservice</groupId>
                 <artifactId>authservice-bom</artifactId>
                 <version>${authservice.version}</version>

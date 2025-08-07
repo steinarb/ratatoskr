@@ -26,9 +26,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import no.priv.bang.ratatoskr.asvocabulary.Collection;
-import no.priv.bang.ratatoskr.asvocabulary.LinkOrObject;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.PersonCollection;
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,15 +38,13 @@ public class FollowingResource {
 
     @GET
     @Path("following/{username}")
-    public Collection getFollowing(@Context UriInfo uriInfo, @PathParam("username") String username) {
-        List<LinkOrObject> following = List.copyOf(ratatoskr.findFollowingWithUsername(username));
-        return Collection.with()
+    public PersonCollection getFollowing(@Context UriInfo uriInfo, @PathParam("username") String username) {
+        var following = List.copyOf(ratatoskr.findFollowingWithUsername(username));
+        return PersonCollection.with()
             .id(followingid(uriInfo, username))
             .totalItems(following.size())
-            .items(following)
+            .orderedItems(following)
             .current(following.getFirst())
-            .first(following.getFirst())
-            .last(following.getLast())
             .build();
     }
 

@@ -25,9 +25,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import no.priv.bang.ratatoskr.asvocabulary.Actor;
-import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,13 +37,13 @@ public class ActorResource {
 
     @GET
     @Path("actor/{username}")
-    public Actor getActor(@Context UriInfo uriInfo, @PathParam("username") String username ) {
-        return ratatoskr.findActorWithUsername(username)
+    public Person getActor(@Context UriInfo uriInfo, @PathParam("username") String username ) {
+        return ratatoskr.findPersonWithUsername(username)
             .map(a -> setUrls(a, uriInfo))
             .orElseThrow(() -> new NotFoundException("Did not find actor \"" + username + "\""));
     }
 
-    private Actor setUrls(Actor actor, UriInfo uriInfo) {
+    private Person setUrls(Person actor, UriInfo uriInfo) {
         return Person.with(actor)
             .inbox(commonInbox(uriInfo))
             .following(following(uriInfo, actor))
@@ -57,15 +56,15 @@ public class ActorResource {
         return uriInfo.getBaseUriBuilder().path("commoninbox").build().toString();
     }
 
-    private String following(UriInfo uriInfo, Actor actor) {
+    private String following(UriInfo uriInfo, Person actor) {
         return uriInfo.getBaseUriBuilder().path("following").path(actor.preferredUsername()).build().toString();
     }
 
-    private String followers(UriInfo uriInfo, Actor actor) {
+    private String followers(UriInfo uriInfo, Person actor) {
         return uriInfo.getBaseUriBuilder().path("followers").path(actor.preferredUsername()).build().toString();
     }
 
-    private String liked(UriInfo uriInfo, Actor actor) {
+    private String liked(UriInfo uriInfo, Person actor) {
         return uriInfo.getBaseUriBuilder().path("liked").path(actor.preferredUsername()).build().toString();
     }
 

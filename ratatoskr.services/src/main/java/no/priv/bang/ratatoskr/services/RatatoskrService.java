@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.priv.bang.ratatoskr.asvocabulary.ActivityStreamObject;
-import no.priv.bang.ratatoskr.asvocabulary.Actor;
 import no.priv.bang.ratatoskr.asvocabulary.Article;
 import no.priv.bang.ratatoskr.asvocabulary.Group;
 import no.priv.bang.ratatoskr.services.activitypub.Like;
@@ -35,11 +34,11 @@ public interface RatatoskrService {
 
     public List<Account> getAccounts();
 
-    Optional<Actor> addActor(Actor person);
+    Optional<Person> addPerson(Person person);
 
-    Optional<Actor> findActor(String id);
+    Optional<Person> findPerson(String id);
 
-    public Optional<Actor> findActorWithUsername(String username);
+    public Optional<Person> findPersonWithUsername(String username);
 
     Optional<Group> addGroup(Group group);
 
@@ -47,13 +46,13 @@ public interface RatatoskrService {
 
     Optional<Article> findArticle(String id);
 
-    List<Actor> findFollowersWithUsername(String username);
+    List<Person> findFollowersWithUsername(String username);
 
-    List<Actor> addFollowerToUsername(String username, String id);
+    List<Person> addFollowerToUsername(String username, String id);
 
-    List<Actor> findFollowingWithUsername(String username);
+    List<Person> findFollowingWithUsername(String username);
 
-    List<Actor> addFollowedToUsername(String username, String id);
+    List<Person> addFollowedToUsername(String username, String id);
 
     List<Like> findLikedWithUsername(String username);
 
@@ -61,13 +60,13 @@ public interface RatatoskrService {
 
     List<Like> userLikeArticle(String username, Article article, Group audience, String localWebContext);
 
-    List<ActivityStreamObject> listInbox(Actor actor);
+    List<ActivityStreamObject> listInbox(Person actor);
 
-    List<ActivityStreamObject> postToInbox(Actor actor, ActivityStreamObject message);
+    List<ActivityStreamObject> postToInbox(Person actor, ActivityStreamObject message);
 
-    List<ActivityStreamObject> listOutbox(Actor actor);
+    List<ActivityStreamObject> listOutbox(Person actor);
 
-    List<ActivityStreamObject> postToOutbox(Actor actor, ActivityStreamObject message);
+    List<ActivityStreamObject> postToOutbox(Person actor, ActivityStreamObject message);
 
     public Optional<CounterIncrementStepBean> getCounterIncrementStep(String username);
 
