@@ -26,9 +26,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import no.priv.bang.ratatoskr.asvocabulary.Collection;
-import no.priv.bang.ratatoskr.asvocabulary.LinkOrObject;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.Activity;
+import no.priv.bang.ratatoskr.services.activitypub.ActivityCollection;
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,15 +39,12 @@ public class LikedResource {
 
     @GET
     @Path("liked/{username}")
-    public Collection getLiked(@Context UriInfo uriInfo, @PathParam("username") String username) {
-        List<LinkOrObject> following = List.copyOf(ratatoskr.findLikedWithUsername(username));
-        return Collection.with()
+    public ActivityCollection getLiked(@Context UriInfo uriInfo, @PathParam("username") String username) {
+        List<Activity> likes = List.copyOf(ratatoskr.findLikedWithUsername(username));
+        return ActivityCollection.with()
             .id(likedId(uriInfo, username))
-            .totalItems(following.size())
-            .items(following)
-            .current(following.getFirst())
-            .first(following.getFirst())
-            .last(following.getLast())
+            .orderedItems(likes)
+            .current(likes.getFirst())
             .build();
     }
 

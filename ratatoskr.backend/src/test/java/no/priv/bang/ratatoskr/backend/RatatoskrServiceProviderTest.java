@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Steinar Bang
+ * Copyright 2023-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -40,14 +40,16 @@ import org.osgi.service.jdbc.DataSourceFactory;
 
 import no.priv.bang.ratatoskr.asvocabulary.Article;
 import no.priv.bang.ratatoskr.asvocabulary.Group;
-import no.priv.bang.ratatoskr.asvocabulary.Like;
 import no.priv.bang.ratatoskr.asvocabulary.Link;
 import no.priv.bang.ratatoskr.asvocabulary.LinkOrObjectList;
-import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.db.liquibase.test.RatatoskrTestDbLiquibaseRunner;
 import no.priv.bang.ratatoskr.services.RatatoskrException;
+import no.priv.bang.ratatoskr.services.activitypub.Like;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
+import no.priv.bang.ratatoskr.services.activitypub.Status;
 import no.priv.bang.ratatoskr.services.beans.CounterIncrementStepBean;
 import no.priv.bang.ratatoskr.services.beans.LocaleBean;
+import no.priv.bang.jdbc.sqldumper.ResultSetSqlDumper;
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 import no.priv.bang.osgiservice.users.Role;
 import no.priv.bang.osgiservice.users.UserManagementService;
@@ -79,7 +81,7 @@ class RatatoskrServiceProviderTest {
             .summary("The common man")
             .icon("http://localhost:8181/ratatoskr/image/165987aklre4")
             .build();
-        ratatoskr.addActor(johnd);
+        ratatoskr.addPerson(johnd);
         var sally = Person.with()
             .id("https://sally.example.com")
             .preferredUsername("sally")
@@ -91,7 +93,7 @@ class RatatoskrServiceProviderTest {
             .liked("https://sally.example.com/liked.json")
             .icon("http://localhost:8181/ratatoskr/image/165987aklre6")
             .build();
-        ratatoskr.addActor(sally);
+        ratatoskr.addPerson(sally);
     }
 
     @Test
@@ -230,7 +232,7 @@ class RatatoskrServiceProviderTest {
             .icon("https://kenzoishii.example.com/image/165987aklre4")
             .build();
 
-        var actor = provider.addActor(person);
+        var actor = provider.addPerson(person);
         assertThat(actor).hasValue(person);
     }
 
@@ -258,7 +260,7 @@ class RatatoskrServiceProviderTest {
             .icon("https://kenzoishii.example.com/image/165987aklre4")
             .build();
 
-        var actor = provider.addActor(person);
+        var actor = provider.addPerson(person);
         assertThat(actor).isEmpty();
         assertThat(logservice.getLogmessages()).isEmpty();
     }
@@ -273,7 +275,7 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        var actor = provider.findActor("https://notfound.example.com");
+        var actor = provider.findPerson("https://notfound.example.com");
         assertThat(actor).isEmpty();
         assertThat(logservice.getLogmessages()).isEmpty();
     }
@@ -290,7 +292,7 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        assertThrows(RatatoskrException.class, () -> provider.findActor("https://kenzoishii.example.com"));
+        assertThrows(RatatoskrException.class, () -> provider.findPerson("https://kenzoishii.example.com"));
     }
 
     @Test
@@ -303,7 +305,7 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        var actor = provider.findActorWithUsername("notfound");
+        var actor = provider.findPersonWithUsername("notfound");
         assertThat(actor).isEmpty();
         assertThat(logservice.getLogmessages()).isEmpty();
     }
@@ -320,7 +322,7 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        assertThrows(RatatoskrException.class, () -> provider.findActorWithUsername("kenzoishii"));
+        assertThrows(RatatoskrException.class, () -> provider.findPersonWithUsername("kenzoishii"));
     }
 
     @Test
@@ -411,7 +413,7 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        var sally = provider.findActorWithUsername("sally").get();
+        var sally = provider.findPersonWithUsername("sally").get();
         var article = Article.with()
             .id("https://sally.example.com/posts/123")
             .name("What a Crazy Day I Had")
@@ -434,7 +436,7 @@ class RatatoskrServiceProviderTest {
         provider.setUseradmin(useradmin);
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
-        var sally = provider.findActorWithUsername("sally").get();
+        var sally = provider.findPersonWithUsername("sally").get();
         var article = Article.with().attributedTo(Link.with().href(sally.id()).build()).build();
 
         assertThrows(RatatoskrException.class, () -> provider.addArticle(article));
@@ -483,7 +485,7 @@ class RatatoskrServiceProviderTest {
         var username = "johnd";
         var followers = provider.findFollowersWithUsername(username);
         assertThat(followers).isEmpty();
-        var sally = provider.findActorWithUsername("sally").get();
+        var sally = provider.findPersonWithUsername("sally").get();
         var updatedfollowers = provider.addFollowerToUsername(username, sally.id());
         assertThat(updatedfollowers).isNotEmpty().contains(sally);
     }
@@ -503,7 +505,7 @@ class RatatoskrServiceProviderTest {
         var username = "johnd";
         var followers = provider.findFollowersWithUsername(username);
         assertThat(followers).isEmpty();
-        var sallyId = provider.findActorWithUsername("sally").get().id();
+        var sallyId = provider.findPersonWithUsername("sally").get().id();
         assertThrows(RatatoskrException.class, () -> provider.addFollowerToUsername(username, sallyId));
     }
 
@@ -536,7 +538,7 @@ class RatatoskrServiceProviderTest {
         var username = "johnd";
         var following = provider.findFollowingWithUsername(username);
         assertThat(following).isEmpty();
-        var sally = provider.findActorWithUsername("sally").get();
+        var sally = provider.findPersonWithUsername("sally").get();
         var updatedfollowing = provider.addFollowedToUsername(username, sally.id());
         assertThat(updatedfollowing).isNotEmpty().contains(sally);
     }
@@ -554,7 +556,7 @@ class RatatoskrServiceProviderTest {
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
         var username = "johnd";
-        var sallyId = provider.findActorWithUsername("sally").get().id();
+        var sallyId = provider.findPersonWithUsername("sally").get().id();
         assertThrows(RatatoskrException.class, () -> provider.addFollowedToUsername(username, sallyId));
     }
 
@@ -591,7 +593,8 @@ class RatatoskrServiceProviderTest {
     }
 
     @Test
-    void testAddLikes() {
+    void testAddLikes() throws Exception {
+        var sqldumper = new ResultSetSqlDumper();
         var logservice = new MockLogService();
         var useradmin = mock(UserManagementService.class);
         var provider = new RatatoskrServiceProvider();
@@ -601,7 +604,7 @@ class RatatoskrServiceProviderTest {
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
         var username = "johnd";
-        var sally = provider.findActorWithUsername("sally").get();
+        var sally = provider.findPersonWithUsername("sally").get();
         var docId = "https://sally.example.com/posts/124";
         var article = Article.with()
             .id(docId)
@@ -610,15 +613,19 @@ class RatatoskrServiceProviderTest {
             .attributedTo(Link.with().href(sally.id()).build())
             .build();
         provider.addArticle(article);
-        var group = provider.addGroup(Group.with().name("Project ZYX Working Group").build()).get();
         var like = Like.with()
             .summary("John liked Sally's note")
-            .audience(group)
-            .actor(Link.with().href("http://localhost:8181/ratatoskr/as/actor/johnd").build())
-            .target(Link.with().href(docId).build())
+            .authoredBy(Person.with().id("http://localhost:8181/ratatoskr/as/actor/johnd").build())
+            .inReplyTo(Status.with().id(docId).build())
             .build();
+        System.err.println("before: " + sqldumper.prettyPrintSqlQuery(datasource, "select * from likes"));
+        System.err.println("group: " + sqldumper.prettyPrintSqlQuery(datasource, "select group_id from groups where name is NULL"));
         var updatedLike = provider.addLikeToUsername(username, like);
-        assertThat(updatedLike).isNotEmpty().contains(like);
+        System.err.print("after: " + sqldumper.prettyPrintSqlQuery(datasource, "select * from likes"));
+        assertThat(updatedLike)
+            .isNotEmpty()
+            .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
+            .contains(like);
     }
 
     @Test
@@ -632,7 +639,7 @@ class RatatoskrServiceProviderTest {
         provider.activate(Collections.singletonMap("defaultlocale", "nb_NO"));
 
         var username = "johnd";
-        var sally = provider.findActor("https://sally.example.com").get();
+        var sally = provider.findPerson("https://sally.example.com").get();
         var audience = provider.addGroup(Group.with().name("Project XYZ Working Group").build()).get();
         var article = provider.addArticle(Article.with()
             .id("https://sally.example.com/posts/125")
@@ -685,7 +692,7 @@ class RatatoskrServiceProviderTest {
         var username = "johnd";
         var like = Like.with()
             .summary("John liked Sally's note")
-            .actor(Link.with().href("http://localhost:8181/ratatoskr/as/actor/johnd").build())
+            .authoredBy(Person.with().id("http://localhost:8181/ratatoskr/as/actor/johnd").build())
             .build();
         var likes = provider.addLikeToUsername(username, like);
         assertThat(likes).isEmpty();
@@ -706,7 +713,7 @@ class RatatoskrServiceProviderTest {
         var username = "johnd";
         var like = Like.with()
             .summary("John liked Sally's note")
-            .actor(Link.with().href("http://localhost:8181/ratatoskr/as/actor/johnd").build())
+            .authoredBy(Person.with().id("http://localhost:8181/ratatoskr/as/actor/johnd").build())
             .build();
         assertThrows(RatatoskrException.class, () -> provider.addLikeToUsername(username, like));
     }
@@ -958,7 +965,6 @@ class RatatoskrServiceProviderTest {
         var ratatoskr = new RatatoskrServiceProvider();
 
         var personId = "https://person.company.com";
-        assertThat(ratatoskr.findId(Person.with().id(personId).build())).isEqualTo(personId);
         assertThat(ratatoskr.findId(Link.with().href(personId).build())).isEqualTo(personId);
         var list = new LinkOrObjectList(Collections.emptyList());
         assertThrows(RatatoskrException.class, () -> ratatoskr.findId(list));
@@ -969,7 +975,6 @@ class RatatoskrServiceProviderTest {
         var ratatoskr = new RatatoskrServiceProvider();
 
         var personId = "https://person.company.com";
-        assertThat(ratatoskr.findHref(Person.with().id(personId).build())).isNull();
         assertThat(ratatoskr.findHref(Link.with().href(personId).build())).isEqualTo(personId);
         assertThat(ratatoskr.findHref(new LinkOrObjectList(Collections.emptyList()))).isNull();
     }
@@ -979,7 +984,6 @@ class RatatoskrServiceProviderTest {
         var ratatoskr = new RatatoskrServiceProvider();
 
         assertThat(ratatoskr.findName(null)).isNull();
-        assertThat(ratatoskr.findName(Person.with().name("Person name").build())).isEqualTo("Person name");
         assertThat(ratatoskr.findName(Link.with().name("Link name").build())).isEqualTo("Link name");
         assertThat(ratatoskr.findName(new LinkOrObjectList(Collections.emptyList()))).isNull();
     }

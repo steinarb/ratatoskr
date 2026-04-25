@@ -28,8 +28,8 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.uri.internal.JerseyUriBuilder;
 import org.junit.jupiter.api.Test;
 
-import no.priv.bang.ratatoskr.asvocabulary.Person;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
 
 class FollowingResourceTest {
 
@@ -70,7 +70,7 @@ class FollowingResourceTest {
         var following = resource.getFollowing(uriInfo, username);
         assertThat(following.id()).isEqualTo("http://localhost:8181/ratatoskr/as/following/johnd");
         assertThat(following.totalItems()).isEqualTo(2);
-        assertThat(following.items()).hasSize(2);
+        assertThat(following.orderedItems()).hasSize(2);
         assertThat(following.current()).isEqualTo(person1);
         assertThat(following.first()).isEqualTo(person1);
         assertThat(following.last()).isEqualTo(person2);

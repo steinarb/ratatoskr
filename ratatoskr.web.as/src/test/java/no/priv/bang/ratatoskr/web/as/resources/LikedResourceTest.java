@@ -28,21 +28,19 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.uri.internal.JerseyUriBuilder;
 import org.junit.jupiter.api.Test;
 
-import no.priv.bang.ratatoskr.asvocabulary.Group;
-import no.priv.bang.ratatoskr.asvocabulary.Like;
-import no.priv.bang.ratatoskr.asvocabulary.Link;
 import no.priv.bang.ratatoskr.services.RatatoskrService;
+import no.priv.bang.ratatoskr.services.activitypub.Like;
+import no.priv.bang.ratatoskr.services.activitypub.Person;
+import no.priv.bang.ratatoskr.services.activitypub.Status;
 
 class LikedResourceTest {
 
     @Test
     void testGetLiked() {
-        var group = Group.with().name("Project XYZ Working Group").build();
         var like = Like.with()
             .summary("John liked Sally's note")
-            .audience(group)
-            .actor(Link.with().href("http://localhost:8181/ratatoskr/as/actor/johnd").build())
-            .target(Link.with().href("https://sally.example.com/posts/124").build())
+            .authoredBy(Person.with().id("http://localhost:8181/ratatoskr/as/actor/johnd").build())
+            .inReplyTo(Status.with().id("https://sally.example.com/posts/124").build())
             .build();
         var ratatoskr = mock(RatatoskrService.class);
         when(ratatoskr.findLikedWithUsername(anyString())).thenReturn(List.of(like));
@@ -57,7 +55,7 @@ class LikedResourceTest {
         var likes = resource.getLiked(uriInfo, username);
         assertThat(likes.id()).isEqualTo("http://localhost:8181/ratatoskr/as/liked/johnd");
         assertThat(likes.totalItems()).isEqualTo(1);
-        assertThat(likes.items()).hasSize(1);
+        assertThat(likes.orderedItems()).hasSize(1);
         assertThat(likes.current()).isEqualTo(like);
         assertThat(likes.first()).isEqualTo(like);
         assertThat(likes.last()).isEqualTo(like);
