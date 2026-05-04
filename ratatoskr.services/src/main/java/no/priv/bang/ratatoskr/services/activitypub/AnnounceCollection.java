@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Steinar Bang
+ * Copyright 2025-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public record AnnounceCollection(
         public Builder orderedItems(List<Announce> orderedItems) {
             this.totalItems = orderedItems.size();
             this.first = orderedItems.stream().findFirst().orElse(null);
-            this.last = orderedItems.stream().reduce((first, second) -> second).orElse(null);
+            this.last = orderedItems.stream().reduce((unused, second) -> second).orElse(null);
             this.orderedItems = orderedItems;
             return this;
         }
