@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Steinar Bang
+ * Copyright 2025-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public record Audio(
         return new Builder();
     }
 
-    static public class Builder {
+    public static class Builder {
 
         private String mediaType;
         private String url;
