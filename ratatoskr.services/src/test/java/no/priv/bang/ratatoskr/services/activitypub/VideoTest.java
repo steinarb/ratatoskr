@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Steinar Bang
+ * Copyright 2025-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import no.priv.bang.ratatoskr.asvocabulary.ActivityStreamObjectType;
 
-public class VideoTest {
+class VideoTest {
 
     @Test
     void testCreateVideo() {
