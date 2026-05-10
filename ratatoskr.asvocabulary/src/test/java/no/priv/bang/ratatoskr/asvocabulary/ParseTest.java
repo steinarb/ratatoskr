@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -3486,8 +3486,30 @@ class ParseTest {
         }
     }
 
+    @Test
+    void testMastodonToot() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-01.json"), LinkOrObject.class);
+        switch(object) {
+            case Create create -> {
+                switch(create.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.example");
+                    default -> fail("Did not get the expected type for move.actor");
+                }
+                switch(create.object()) {
+                    case Note note -> assertThat(note.summary()).isEqualTo("Optional Content Warning");
+                    default -> fail("Did not get the expected type for move.object");
+                }
+            }
+            default -> fail("Did not get the expected type when parsing");
+        }
+    }
+
     private InputStream activityStreamsExample(String classpathResource) {
         return this.getClass().getResourceAsStream("/json/activitystreams-vocabulary/" + classpathResource);
+    }
+
+    private InputStream mastodonExample(String classpathResource) {
+        return this.getClass().getResourceAsStream("/json/mastodon-examples/" + classpathResource);
     }
 
 }
