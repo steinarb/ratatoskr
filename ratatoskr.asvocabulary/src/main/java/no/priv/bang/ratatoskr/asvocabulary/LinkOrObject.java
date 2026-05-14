@@ -76,7 +76,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = Tombstone.class, name = ActivityStreamObjectType.Names.TOMBSTONE),
     @Type(value = Service.class, name = ActivityStreamObjectType.Names.SERVICE),
     @Type(value = LinkRecord.class, name = ActivityStreamObjectType.Names.LINK),
-    @Type(value = Mention.class, name = ActivityStreamObjectType.Names.MENTION)
+    @Type(value = Mention.class, name = ActivityStreamObjectType.Names.MENTION),
+    @Type(value = Hashtag.class, name = ActivityStreamObjectType.Names.HASHTAG)
 })
 public sealed interface LinkOrObject permits Link, ActivityStreamObject, LinkOrObjectList {
 

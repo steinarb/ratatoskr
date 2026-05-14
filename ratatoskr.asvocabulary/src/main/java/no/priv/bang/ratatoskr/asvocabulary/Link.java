@@ -18,7 +18,7 @@ package no.priv.bang.ratatoskr.asvocabulary;
 import java.util.Collections;
 import java.util.List;
 
-public sealed interface Link extends LinkOrObject permits LinkRecord, Mention {
+public sealed interface Link extends LinkOrObject permits LinkRecord, Mention, Hashtag {
     public String href();
     public List<String> rel();
     public String mediaType();
