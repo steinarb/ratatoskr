@@ -1,0 +1,7 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "https://activitypub.academy/6745de67-d033-419c-9972-b5ac7364e9f0",
+  "type": "Follow",
+  "actor": "https://activitypub.academy/users/braussia_vrottariul",
+  "object": "https://mastodon.social/users/steinarb"
+}

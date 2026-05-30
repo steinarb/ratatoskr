@@ -1,0 +1,7 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "https://mastodon.social/users/steinarb#likes/295949117",
+  "type": "Like",
+  "actor": "https://mastodon.social/users/steinarb",
+  "object": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446"
+}
