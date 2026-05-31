@@ -40,6 +40,7 @@ public sealed interface ActivityStreamObject extends LinkOrObject permits Intran
     public ZonedDateTime endTime();
     public ZonedDateTime published();
     public ZonedDateTime updated();
+    @JsonDeserialize(converter = StringToLinkConverter.class)
     public LinkOrObject attachment();
     public LinkOrObject audience();
     @JsonDeserialize(converter = StringToLinkConverter.class)
