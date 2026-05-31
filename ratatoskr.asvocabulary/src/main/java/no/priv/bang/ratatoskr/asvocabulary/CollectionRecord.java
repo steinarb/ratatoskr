@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,12 @@ public record CollectionRecord(
     List<LinkOrObject> items,
     LinkOrObject current,
     LinkOrObject first,
-    LinkOrObject last
+    LinkOrObject last,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Collection likes,
+    Collection shares
 ) implements Collection
 {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,12 @@ class PersonTest {
         var streams = "http://localhost:8181/ratatoskr/ap/streams/kenzoishii";
         var preferredUsername = "kenzoishii";
         var endpoints = EndPoints.with().sharedInbox("http://localhost:8181/ratatoskr/ap/sharedinbox").build();
+        var iconUrl = "https://mastodon.example";
+        String summary = null;
+        var atomUri = "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446";
+        var inReplyToAtomUri = "https://mastodon.social/users/steinarb/statuses/116664951745885706";
+        var conversation = "tag:activitypub.academy,2026-05-30:objectId=239324:objectType=Conversation";
+
         var actor = Person.with()
             .id(id)
             .type(ActivityStreamObjectType.Person)
@@ -46,6 +52,11 @@ class PersonTest {
             .streams(streams)
             .preferredUsername(preferredUsername)
             .endpoints(endpoints)
+            .icon(iconUrl)
+            .summary(summary)
+            .atomUri(atomUri)
+            .inReplyToAtomUri(inReplyToAtomUri)
+            .conversation(conversation)
             .build();
 
         assertThat(actor)
@@ -58,7 +69,34 @@ class PersonTest {
             .hasFieldOrPropertyWithValue("followers", followers)
             .hasFieldOrPropertyWithValue("liked", liked)
             .hasFieldOrPropertyWithValue("streams", streams)
-            .hasFieldOrPropertyWithValue("endpoints", endpoints);
+            .hasFieldOrPropertyWithValue("endpoints", endpoints)
+            .hasFieldOrPropertyWithValue("icon", Link.with().href(iconUrl).build())
+            .hasFieldOrPropertyWithValue("summary", summary)
+            .hasFieldOrPropertyWithValue("atomUri", Link.with().href(atomUri).build())
+            .hasFieldOrPropertyWithValue("inReplyToAtomUri", Link.with().href(inReplyToAtomUri).build())
+            .hasFieldOrPropertyWithValue("conversation", conversation);
+    }
+
+    @Test
+    void testCopyPerson() {
+        var id = "http://localhost:8181/ratatoskr/ap/person/kenzoishii";
+        var preferredUsername = "kenzoishii";
+        var name = "Per";
+        var iconUrl = "https://mastodon.example";
+        String summary = null;
+
+        var actor = Person.with()
+            .id(id)
+            .type(ActivityStreamObjectType.Person)
+            .preferredUsername(preferredUsername)
+            .name(name)
+            .icon(iconUrl)
+            .summary(summary)
+            .build();
+
+        var actorCopy = Person.with(actor).build();
+
+        assertThat(actorCopy).isEqualTo(actor);
     }
 
     @Test

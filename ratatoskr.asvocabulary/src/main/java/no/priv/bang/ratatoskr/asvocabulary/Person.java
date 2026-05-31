@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,13 @@ public record Person(
     String liked,
     String streams,
     String preferredUsername,
-    EndPoints endpoints) implements Actor
-{
+    EndPoints endpoints,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Collection likes,
+    Collection shares)
+implements Actor {
 
     public static Builder with() {
         return new Builder();
@@ -120,6 +125,9 @@ public record Person(
         private String streams;
         private String preferredUsername;
         private EndPoints endpoints;
+        private Link atomUri;
+        private Link inReplyToAtomUri;
+        private String conversation;
 
         public Person build() {
             return new Person(
@@ -161,7 +169,12 @@ public record Person(
                 liked,
                 streams,
                 preferredUsername,
-                endpoints);
+                endpoints,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                null,
+                null);
         }
 
         public Builder id(String id) {
@@ -226,6 +239,21 @@ public record Person(
 
         public Builder icon(String iconUrl) {
             this.icon = Link.with().href(iconUrl).build();
+            return this;
+        }
+
+        public Builder atomUri(String uri) {
+            this.atomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder inReplyToAtomUri(String uri) {
+            this.inReplyToAtomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder conversation(String conversation) {
+            this.conversation = conversation;
             return this;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,12 @@ public record Group(
     LinkOrObject location,
     LinkOrObject preview,
     Collection replies,
-    LinkOrObject tag
+    LinkOrObject tag,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Collection likes,
+    Collection shares
 ) implements ActivityStreamObject
 {
 
@@ -99,6 +104,11 @@ public record Group(
         private LinkOrObject preview;
         private Collection replies;
         private LinkOrObject tag;
+        private Link atomUri;
+        private Link inReplyToAtomUri;
+        private String conversation;
+        private Collection likes;
+        private Collection shares;
 
         public Group build() {
             return new Group(
@@ -132,7 +142,12 @@ public record Group(
                 location,
                 preview,
                 replies,
-                tag);
+                tag,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares);
         }
 
 
@@ -283,6 +298,31 @@ public record Group(
 
         public Builder tag(LinkOrObject tag) {
             this.tag = tag;
+            return this;
+        }
+
+        public Builder atomUri(String uri) {
+            this.atomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder inReplyToAtomUri(String uri) {
+            this.inReplyToAtomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder conversation(String conversation) {
+            this.conversation = conversation;
+            return this;
+        }
+
+        public Builder likes(Collection likes) {
+            this.likes = likes;
+            return this;
+        }
+
+        public Builder shares(Collection shares) {
+            this.shares = shares;
             return this;
         }
     }

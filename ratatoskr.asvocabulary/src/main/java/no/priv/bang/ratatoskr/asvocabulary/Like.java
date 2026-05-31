@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,13 @@ public record Like(
     LinkOrObject origin,
     LinkOrObject object,
     LinkOrObject instrument,
-    LinkOrObject result
+    LinkOrObject result,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Signature signature,
+    Collection likes,
+    Collection shares
 ) implements Activity {
     public static Builder with() {
         return new Builder();
@@ -102,6 +108,10 @@ public record Like(
         builder.object = like.object();
         builder.instrument = like.instrument();
         builder.result = like.result();
+        builder.atomUri = like.atomUri();
+        builder.inReplyToAtomUri = like.inReplyToAtomUri();
+        builder.conversation = like.conversation();
+        builder.signature = like.signature();
         return builder;
     }
 
@@ -143,6 +153,10 @@ public record Like(
         private LinkOrObject object;
         private LinkOrObject instrument;
         private LinkOrObject result;
+        private Link atomUri;
+        private Link inReplyToAtomUri;
+        private String conversation;
+        private Signature signature;
 
         public Like build() {
             return new Like(
@@ -182,7 +196,13 @@ public record Like(
                 origin,
                 object,
                 instrument,
-                result);
+                result,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                signature,
+                null,
+                null);
         }
 
         public Builder context(Object context) {
@@ -362,6 +382,26 @@ public record Like(
 
         public Builder result(LinkOrObject result) {
             this.result = result;
+            return this;
+        }
+
+        public Builder atomUri(String uri) {
+            this.atomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder inReplyToAtomUri(String uri) {
+            this.inReplyToAtomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder conversation(String conversation) {
+            this.conversation = conversation;
+            return this;
+        }
+
+        public Builder signature(Signature signature) {
+            this.signature = signature;
             return this;
         }
     }
