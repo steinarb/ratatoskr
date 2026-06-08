@@ -51,7 +51,13 @@ public record Note(
     LinkOrObject preview,
     Collection replies,
     LinkOrObject tag,
-    boolean sensitive
+    boolean sensitive,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    InteractionPolicy interactionPolicy,
+    Collection likes,
+    Collection shares
 ) implements ActivityStreamObject
 {
 }

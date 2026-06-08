@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Steinar Bang
+ * Copyright 2025-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,15 @@ class LikeTest {
         Collection replies = null;
         LinkOrObject tag = null;
         LinkOrObject actor = Link.with().href("https://john.example.com").build();
+        LinkOrObject target = null;
+        LinkOrObject origin = null;
         LinkOrObject object = Link.with().href("http://notes.example.com/1").build();
+        LinkOrObject instrument = null;
+        LinkOrObject result = null;
+        var atomUri = "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446";
+        var inReplyToAtomUri = "https://mastodon.social/users/steinarb/statuses/116664951745885706";
+        var conversation = "tag:activitypub.academy,2026-05-30:objectId=239324:objectType=Conversation";
+        Signature signature = null;
 
         var like = Like.with()
             .context(context)
@@ -93,7 +101,15 @@ class LikeTest {
             .replies(replies)
             .tag(tag)
             .actor(actor)
+            .target(target)
+            .origin(origin)
             .object(object)
+            .instrument(instrument)
+            .result(result)
+            .atomUri(atomUri)
+            .inReplyToAtomUri(inReplyToAtomUri)
+            .conversation(conversation)
+            .signature(signature)
             .build();
 
         assertThat(like.type()).isEqualTo(ActivityStreamObjectType.Like);

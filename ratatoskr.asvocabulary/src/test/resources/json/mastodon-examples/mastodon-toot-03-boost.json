@@ -1,0 +1,15 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "https://activitypub.academy/users/braussia_vrottariul/statuses/116665009509094466/activity",
+  "type": "Announce",
+  "actor": "https://activitypub.academy/users/braussia_vrottariul",
+  "published": "2026-05-30T18:46:11Z",
+  "to": [
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "cc": [
+    "https://mastodon.social/users/steinarb",
+    "https://activitypub.academy/users/braussia_vrottariul/followers"
+  ],
+  "object": "https://mastodon.social/users/steinarb/statuses/116664898678882313"
+}

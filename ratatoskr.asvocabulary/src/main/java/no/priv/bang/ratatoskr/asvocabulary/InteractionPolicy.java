@@ -1,5 +1,6 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +14,9 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-public sealed interface Activity extends IntransitiveActivity permits Accept, ActivityRecord, Add, Announce, Create, Delete, Follow, Ignore, Join, Leave, Like, Listen, Offer, Move, Read, Reject, Remove, Undo, Update, View, Flag, Dislike, UntypedObject {
-    @JsonDeserialize(converter = StringToLinkConverter.class)
-    LinkOrObject object();
-    LinkOrObject instrument();
-    Signature signature();
+public record InteractionPolicy(
+    InteractionSubPolicy canQuote
+)
+{
 }

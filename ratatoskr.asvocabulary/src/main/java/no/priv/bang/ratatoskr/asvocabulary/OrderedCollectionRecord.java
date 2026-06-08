@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,12 @@ public record OrderedCollectionRecord(
     LinkOrObject current,
     LinkOrObject first,
     LinkOrObject last,
-    List<LinkOrObject> orderedItems
+    List<LinkOrObject> orderedItems,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Collection likes,
+    Collection shares
 ) implements OrderedCollection
 {
 }

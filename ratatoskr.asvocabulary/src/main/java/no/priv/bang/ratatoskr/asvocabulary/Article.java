@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,12 @@ public record Article(
     LinkOrObject location,
     LinkOrObject preview,
     Collection replies,
-    LinkOrObject tag
+    LinkOrObject tag,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Collection likes,
+    Collection shares
 ) implements ActivityStreamObject {
 
     public static Builder with() {
@@ -89,6 +94,11 @@ public record Article(
         builder.preview = article.preview();
         builder.replies = article.replies();
         builder.tag = article.tag();
+        builder.atomUri = article.atomUri();
+        builder.inReplyToAtomUri = article.inReplyToAtomUri();
+        builder.conversation = article.conversation();
+        builder.likes = article.likes();
+        builder.shares = article.shares();
         return builder;
     }
 
@@ -124,6 +134,11 @@ public record Article(
         private LinkOrObject preview;
         private Collection replies;
         private LinkOrObject tag;
+        private Link atomUri;
+        private Link inReplyToAtomUri;
+        private String conversation;
+        private Collection likes;
+        private Collection shares;
 
         public Article build() {
             return new Article(
@@ -157,7 +172,12 @@ public record Article(
                 location,
                 preview,
                 replies,
-                tag
+                tag,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
             );
         }
 
@@ -308,6 +328,31 @@ public record Article(
 
         public Builder tag(LinkOrObject tag) {
             this.tag = tag;
+            return this;
+        }
+
+        public Builder atomUri(String uri) {
+            this.atomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder inReplyToAtomUri(String uri) {
+            this.inReplyToAtomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder conversation(String conversation) {
+            this.conversation = conversation;
+            return this;
+        }
+
+        public Builder likes(Collection likes) {
+            this.likes = likes;
+            return this;
+        }
+
+        public Builder shares(Collection shares) {
+            this.shares = shares;
             return this;
         }
     }

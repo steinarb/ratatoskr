@@ -1,0 +1,111 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    {
+      "ostatus": "http://ostatus.org#",
+      "atomUri": "ostatus:atomUri",
+      "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+      "conversation": "ostatus:conversation",
+      "sensitive": "as:sensitive",
+      "toot": "http://joinmastodon.org/ns#",
+      "votersCount": "toot:votersCount",
+      "quote": {
+        "@id": "https://w3id.org/fep/044f#quote",
+        "@type": "@id"
+      },
+      "quoteUri": "http://fedibird.com/ns#quoteUri",
+      "_misskey_quote": "https://misskey-hub.net/ns#_misskey_quote",
+      "quoteAuthorization": {
+        "@id": "https://w3id.org/fep/044f#quoteAuthorization",
+        "@type": "@id"
+      },
+      "gts": "https://gotosocial.org/ns#",
+      "interactionPolicy": {
+        "@id": "gts:interactionPolicy",
+        "@type": "@id"
+      },
+      "canQuote": {
+        "@id": "gts:canQuote",
+        "@type": "@id"
+      },
+      "automaticApproval": {
+        "@id": "gts:automaticApproval",
+        "@type": "@id"
+      },
+      "manualApproval": {
+        "@id": "gts:manualApproval",
+        "@type": "@id"
+      }
+    },
+    "https://w3id.org/security/v1"
+  ],
+  "id": "https://mastodon.social/users/steinarb/statuses/116664898678882313/activity",
+  "type": "Create",
+  "actor": "https://mastodon.social/users/steinarb",
+  "published": "2026-05-30T18:17:59Z",
+  "to": [
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "cc": [
+    "https://mastodon.social/users/steinarb/followers"
+  ],
+  "object": {
+    "id": "https://mastodon.social/users/steinarb/statuses/116664898678882313",
+    "type": "Note",
+    "summary": null,
+    "inReplyTo": null,
+    "published": "2026-05-30T18:17:59Z",
+    "url": "https://mastodon.social/@steinarb/116664898678882313",
+    "attributedTo": "https://mastodon.social/users/steinarb",
+    "to": [
+      "https://www.w3.org/ns/activitystreams#Public"
+    ],
+    "cc": [
+      "https://mastodon.social/users/steinarb/followers"
+    ],
+    "sensitive": false,
+    "atomUri": "https://mastodon.social/users/steinarb/statuses/116664898678882313",
+    "inReplyToAtomUri": null,
+    "conversation": "https://mastodon.social/contexts/1197378-116664898678882313",
+    "context": "https://mastodon.social/contexts/1197378-116664898678882313",
+    "content": "<p>Dette er en enkel tut på norsk.</p>",
+    "contentMap": {
+      "no": "<p>Dette er en enkel tut på norsk.</p>"
+    },
+    "interactionPolicy": {
+      "canQuote": {
+        "automaticApproval": [
+          "https://www.w3.org/ns/activitystreams#Public"
+        ]
+      }
+    },
+    "attachment": [],
+    "tag": [],
+    "replies": {
+      "id": "https://mastodon.social/users/steinarb/statuses/116664898678882313/replies",
+      "type": "Collection",
+      "first": {
+        "type": "CollectionPage",
+        "next": "https://mastodon.social/users/steinarb/statuses/116664898678882313/replies?only_other_accounts=true&page=true",
+        "partOf": "https://mastodon.social/users/steinarb/statuses/116664898678882313/replies",
+        "items": []
+      }
+    },
+    "likes": {
+      "id": "https://mastodon.social/users/steinarb/statuses/116664898678882313/likes",
+      "type": "Collection",
+      "totalItems": 0
+    },
+    "shares": {
+      "id": "https://mastodon.social/users/steinarb/statuses/116664898678882313/shares",
+      "type": "Collection",
+      "totalItems": 0
+    }
+  },
+  "signature": {
+    "type": "RsaSignature2017",
+    "creator": "https://mastodon.social/users/steinarb#main-key",
+    "created": "2026-05-30T18:18:00Z",
+    "signatureValue": "aCW38/VebLWG6fPYZofbH4G0xFqDMsYMyWM9bR50Xpv/HLWGT4nHao73OdgY2YS1VoLX6TDT3YAtzGfIumVnKanuvqYIM08VaZp0wNRYyRFCsvKM4rypc0HBTH6vzTuCLT9Y/2Nb40vYGPlkW5nDWSKdamTFTKeDEAnJWzfS9nOeI5hU54nhggbIzoaq1T8bhokPSt2zCbwSypfE9Jvq5VRzGr/eWjQCVc2BcyTJVTrZevxz7mpwKRGXQofBy2BM1k5E/X5IfHTVYcI6A4v7H8onlQieauG4lMrSaYnlD3XJMN6qz7PGBkPiOWTEPPuzqB5wGFxD6rTV+eRq3sNecg=="
+  }
+}

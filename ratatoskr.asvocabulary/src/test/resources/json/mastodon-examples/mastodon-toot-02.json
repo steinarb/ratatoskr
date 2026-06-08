@@ -1,0 +1,87 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    {
+      "ostatus": "http://ostatus.org#",
+      "atomUri": "ostatus:atomUri",
+      "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+      "conversation": "ostatus:conversation",
+      "sensitive": "as:sensitive",
+      "toot": "http://joinmastodon.org/ns#",
+      "votersCount": "toot:votersCount",
+      "blurhash": "toot:blurhash",
+      "focalPoint": {
+        "@container": "@list",
+        "@id": "toot:focalPoint"
+      },
+      "Hashtag": "as:Hashtag"
+    }
+  ],
+  "id": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446/activity",
+  "type": "Create",
+  "actor": "https://activitypub.academy/users/braussia_vrottariul",
+  "published": "2026-05-30T18:00:16Z",
+  "to": [
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "cc": [
+    "https://activitypub.academy/users/braussia_vrottariul/followers"
+  ],
+  "object": {
+    "id": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446",
+    "type": "Note",
+    "summary": null,
+    "inReplyTo": null,
+    "published": "2026-05-30T18:00:16Z",
+    "url": "https://activitypub.academy/@braussia_vrottariul/116664828968716446",
+    "attributedTo": "https://activitypub.academy/users/braussia_vrottariul",
+    "to": [
+      "https://www.w3.org/ns/activitystreams#Public"
+    ],
+    "cc": [
+      "https://activitypub.academy/users/braussia_vrottariul/followers"
+    ],
+    "sensitive": false,
+    "atomUri": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446",
+    "inReplyToAtomUri": null,
+    "conversation": "tag:activitypub.academy,2026-05-30:objectId=239324:objectType=Conversation",
+    "content": "<p>Test post with image</p><p><a href=\"https://activitypub.academy/tags/stovnert%C3%A5rnet\" class=\"mention hashtag\" rel=\"tag\">#<span>stovnertårnet</span></a></p>",
+    "contentMap": {
+      "en": "<p>Test post with image</p><p><a href=\"https://activitypub.academy/tags/stovnert%C3%A5rnet\" class=\"mention hashtag\" rel=\"tag\">#<span>stovnertårnet</span></a></p>"
+    },
+    "attachment": [
+      {
+        "type": "Document",
+        "mediaType": "image/jpeg",
+        "url": "https://activitypub.academy/system/media_attachments/files/116/664/827/379/585/262/original/44438e2a5ddaf6fd.jpeg",
+        "name": null,
+        "blurhash": "U]IrQ#-:t7j]_4xtWBWBt7oeRjWBM{WCRjay",
+        "width": 1663,
+        "height": 1247
+      }
+    ],
+    "tag": [
+      {
+        "type": "Hashtag",
+        "href": "https://activitypub.academy/tags/stovnertarnet",
+        "name": "#stovnertarnet"
+      }
+    ],
+    "replies": {
+      "id": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446/replies",
+      "type": "Collection",
+      "first": {
+        "type": "CollectionPage",
+        "next": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446/replies?only_other_accounts=true&page=true",
+        "partOf": "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446/replies",
+        "items": []
+      }
+    }
+  },
+  "signature": {
+    "type": "RsaSignature2017",
+    "creator": "https://activitypub.academy/users/braussia_vrottariul#main-key",
+    "created": "2026-05-30T18:00:16Z",
+    "signatureValue": "UGnB934eV+DRamLxE26gtmw6P721HCG6nAo5u3FXKAAYgugdgSfgnOdiv7i5A6hxz5ypxl0jxk2SrT00YBDSQfovF3Gd/DWpuliqSYFu0tWqY3iF4u17KFtZyaGhLnFwzY63Nqtsr6UwG+2odli/Wk3d5bFgxWYV2T3ci0nCcnyg9QKX0KBCIoNI+65bBfD3WEbA6YR8SYv7Styr92AwH9JIJCdxKHcVV66s1x8TzgKrZEXDqr+TR4mK2xpz9q4Ewe+ziRN5IGRy3Awpm2DZJ2wyRA1mXmbiP5JCHvCnG0COJWgIv+ZuJvoLN0oiWX0kgxIMf0nX2vy1VoVqic60qQ=="
+  }
+}

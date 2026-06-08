@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,11 @@ public sealed interface Collection extends ActivityStreamObject permits Collecti
         private LinkOrObject current;
         private LinkOrObject first;
         private LinkOrObject last;
+        private Link atomUri;
+        private Link inReplyToAtomUri;
+        private String conversation;
+        private Collection likes;
+        private Collection shares;
 
         public Collection build() {
             return new CollectionRecord(
@@ -110,7 +115,12 @@ public sealed interface Collection extends ActivityStreamObject permits Collecti
                 items,
                 current,
                 first,
-                last
+                last,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
             );
         }
 
@@ -286,6 +296,31 @@ public sealed interface Collection extends ActivityStreamObject permits Collecti
 
         public Builder last(LinkOrObject last) {
             this.last = last;
+            return this;
+        }
+
+        public Builder atomUri(String uri) {
+            this.atomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder inReplyToAtomUri(String uri) {
+            this.inReplyToAtomUri = Link.with().href(uri).build();
+            return this;
+        }
+
+        public Builder conversation(String conversation) {
+            this.conversation = conversation;
+            return this;
+        }
+
+        public Builder likes(Collection likes) {
+            this.likes = likes;
+            return this;
+        }
+
+        public Builder shares(Collection shares) {
+            this.shares = shares;
             return this;
         }
 

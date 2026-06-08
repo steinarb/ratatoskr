@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,12 @@ public record CollectionPage(
     @JsonDeserialize(converter = StringToLinkConverter.class)
     LinkOrObject next,
     @JsonDeserialize(converter = StringToLinkConverter.class)
-    LinkOrObject prev
+    LinkOrObject prev,
+    Link atomUri,
+    Link inReplyToAtomUri,
+    String conversation,
+    Collection likes,
+    Collection shares
 ) implements Collection
 {
 }

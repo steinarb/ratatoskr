@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Steinar Bang
+ * Copyright 2025-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,11 @@ class ArticleTest {
         LinkOrObject preview = null;
         Collection replies = null;
         LinkOrObject tag = null;
+        var atomUri = "https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446";
+        var inReplyToAtomUri = "https://mastodon.social/users/steinarb/statuses/116664951745885706";
+        var conversation = "tag:activitypub.academy,2026-05-30:objectId=239324:objectType=Conversation";
+        Collection likes = null;
+        Collection shares = null;
 
         var article = Article.with()
             .context(context)
@@ -90,6 +95,11 @@ class ArticleTest {
             .preview(preview)
             .replies(replies)
             .tag(tag)
+            .atomUri(atomUri)
+            .inReplyToAtomUri(inReplyToAtomUri)
+            .conversation(conversation)
+            .likes(likes)
+            .shares(shares)
             .build();
 
         assertThat(article.type()).isEqualTo(ActivityStreamObjectType.Article);

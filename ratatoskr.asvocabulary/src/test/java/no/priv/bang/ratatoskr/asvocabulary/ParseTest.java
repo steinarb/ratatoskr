@@ -3487,20 +3487,228 @@ class ParseTest {
     }
 
     @Test
-    void testMastodonToot() throws Exception {
+    void testMastodonFollow01() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-follow-01.json"), LinkOrObject.class);
+        switch(object) {
+            case Follow follow -> {
+                switch(follow.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul");
+                    default -> assertThat(follow.actor()).isInstanceOf(LinkRecord.class);
+                }
+                switch(follow.object()) {
+                    case LinkRecord link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(follow.object()).isInstanceOf(LinkRecord.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Follow.class);
+        }
+    }
+
+    @Test
+    void testMastodonFollow01Accept() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-follow-01-accept.json"), LinkOrObject.class);
+        switch(object) {
+            case Accept accept -> {
+                switch(accept.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(accept.actor()).isInstanceOf(LinkRecord.class);
+                }
+                switch(accept.object()) {
+                    case Follow follow -> {
+                        switch(follow.object()) {
+                            case LinkRecord link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                            default -> assertThat(follow.object()).isInstanceOf(LinkRecord.class);
+                        }
+                    }
+                    default -> assertThat(accept.object()).isInstanceOf(Follow.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Follow.class);
+        }
+    }
+
+    @Test
+    void testMastodonFollow02() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-follow-02.json"), LinkOrObject.class);
+        switch(object) {
+            case Follow follow -> {
+                switch(follow.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(follow.actor()).isInstanceOf(LinkRecord.class);
+                }
+                switch(follow.object()) {
+                    case LinkRecord link -> assertThat(link.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul");
+                    default -> assertThat(follow.object()).isInstanceOf(LinkRecord.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Follow.class);
+        }
+    }
+
+    @Test
+    void testMastodonFollow02Accept() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-follow-02-accept.json"), LinkOrObject.class);
+        switch(object) {
+            case Accept accept -> {
+                switch(accept.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul");
+                    default -> assertThat(accept.actor()).isInstanceOf(LinkRecord.class);
+                }
+                switch(accept.object()) {
+                    case Follow follow -> {
+                        switch(follow.object()) {
+                            case LinkRecord link -> assertThat(link.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul");
+                            default -> assertThat(follow.object()).isInstanceOf(LinkRecord.class);
+                        }
+                    }
+                    default -> assertThat(accept.object()).isInstanceOf(Follow.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Follow.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot01() throws Exception {
         LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-01.json"), LinkOrObject.class);
         switch(object) {
             case Create create -> {
                 switch(create.actor()) {
                     case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.example");
-                    default -> fail("Did not get the expected type for move.actor");
+                    default -> assertThat(create.actor()).isInstanceOf(Link.class);
                 }
                 switch(create.object()) {
                     case Note note -> assertThat(note.summary()).isEqualTo("Optional Content Warning");
-                    default -> fail("Did not get the expected type for move.object");
+                    default -> assertThat(create.object()).isInstanceOf(Note.class);
                 }
             }
-            default -> fail("Did not get the expected type when parsing");
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot02() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-02.json"), LinkOrObject.class);
+        switch(object) {
+            case Create create -> {
+                switch(create.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul");
+                    default -> assertThat(create.actor()).isInstanceOf(Link.class);
+                }
+                switch(create.object()) {
+                    case Note note -> assertThat(note.content()).startsWith("<p>Test post with image");
+                    default -> assertThat(create.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot02Comment01() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-02-comment-01.json"), LinkOrObject.class);
+        switch(object) {
+            case Create create -> {
+                switch(create.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(create.actor()).isInstanceOf(Link.class);
+                }
+                switch(create.object()) {
+                    case Note note -> assertThat(note.content()).contains("Nice picture");
+                    default -> assertThat(create.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot02Comment02() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-02-comment-02.json"), LinkOrObject.class);
+        switch(object) {
+            case Create create -> {
+                switch(create.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(create.actor()).isInstanceOf(Link.class);
+                }
+                switch(create.object()) {
+                    case Note note -> assertThat(note.content()).contains("Interesting picture");
+                    default -> assertThat(create.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot02Comment03() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-02-comment-03.json"), LinkOrObject.class);
+        switch(object) {
+            case Create create -> {
+                switch(create.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(create.actor()).isInstanceOf(Link.class);
+                }
+                switch(create.object()) {
+                    case Note note -> assertThat(note.content()).contains("Comment without mention");
+                    default -> assertThat(create.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot02Like01() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-02-like-01.json"), LinkOrObject.class);
+        switch(object) {
+            case Like like -> {
+                switch(like.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(like.actor()).isInstanceOf(Link.class);
+                }
+                switch(like.object()) {
+                    case Link link2 -> assertThat(link2.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul/statuses/116664828968716446");
+                    default -> assertThat(like.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot03() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-03.json"), LinkOrObject.class);
+        switch(object) {
+            case Create create -> {
+                switch(create.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://mastodon.social/users/steinarb");
+                    default -> assertThat(create.actor()).isInstanceOf(Link.class);
+                }
+                switch(create.object()) {
+                    case Note note -> assertThat(note.content()).isEqualTo("<p>Dette er en enkel tut på norsk.</p>");
+                    default -> assertThat(create.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
+        }
+    }
+
+    @Test
+    void testMastodonToot03Boost() throws Exception {
+        LinkOrObject object = mapper.readValue(mastodonExample("mastodon-toot-03-boost.json"), LinkOrObject.class);
+        switch(object) {
+            case Announce announce -> {
+                switch(announce.actor()) {
+                    case Link link -> assertThat(link.href()).isEqualTo("https://activitypub.academy/users/braussia_vrottariul");
+                    default -> assertThat(announce.actor()).isInstanceOf(Link.class);
+                }
+                switch(announce.object()) {
+                    case Link link2 -> assertThat(link2.href()).isEqualTo("https://mastodon.social/users/steinarb/statuses/116664898678882313");
+                    default -> assertThat(announce.object()).isInstanceOf(Note.class);
+                }
+            }
+            default -> assertThat(object).isInstanceOf(Create.class);
         }
     }
 
