@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -64,4 +64,70 @@ public record TentativeReject(
     Collection likes,
     Collection shares
 ) implements Reject {
+
+    public static Builder with() {
+        return new Builder();
+    }
+
+    public static Builder with(TentativeReject source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends BaseActivityBuilder<Builder> {
+        private Builder() {
+            super();
+        }
+
+        private Builder(TentativeReject source) {
+            super(source);
+        }
+
+        public TentativeReject build() {
+            return new TentativeReject(
+                context,
+                ActivityStreamObjectType.TentativeReject,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                actor,
+                target,
+                origin,
+                object,
+                instrument,
+                result,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                signature,
+                likes,
+                shares
+            );
+        }
+    }
 }

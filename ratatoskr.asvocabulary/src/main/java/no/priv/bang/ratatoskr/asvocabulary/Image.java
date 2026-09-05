@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -61,4 +61,67 @@ public record Image(
     Collection shares
 ) implements Document
 {
+
+    public static Builder with() {
+        return new Builder();
+    }
+
+    public static Builder with(Image source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends DocumentBuilderBase<Builder> {
+
+        public Builder() {
+            super();
+        }
+
+        protected Builder(Image source) {
+            super(source);
+        }
+
+        public Image build() {
+            return new Image(
+                context,
+                ActivityStreamObjectType.Image,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                width,
+                height,
+                blurhash,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
+            );
+        }
+    }
 }

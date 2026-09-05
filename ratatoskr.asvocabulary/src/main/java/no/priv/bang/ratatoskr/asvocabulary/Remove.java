@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -64,4 +64,70 @@ public record Remove(
     Collection likes,
     Collection shares
 ) implements Activity {
+
+    public static Builder with() {
+        return new Builder();
+    }
+
+    public static Builder with(Remove source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends BaseActivityBuilder<Builder> {
+        private Builder() {
+            super();
+        }
+
+        private Builder(Remove source) {
+            super(source);
+        }
+
+        public Remove build() {
+            return new Remove(
+                context,
+                ActivityStreamObjectType.Remove,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                actor,
+                target,
+                origin,
+                object,
+                instrument,
+                result,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                signature,
+                likes,
+                shares
+            );
+        }
+    }
 }

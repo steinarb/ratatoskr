@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2025-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -120,6 +120,36 @@ class CollectionTest {
         assertThat(collection.current()).isEqualTo(person1);
         assertThat(collection.first()).isEqualTo(person1);
         assertThat(collection.last()).isEqualTo(person2);
+    }
+
+    @Test
+    void testCopy() {
+        int totalItems = 2;
+        LinkOrObject person1 = Person.with().id("person1").build();
+        LinkOrObject person2 = Person.with().id("person2").build();
+        List<LinkOrObject> items = List.of(person1, person2);
+        LinkOrObject current = person1;
+        LinkOrObject first = person1;
+        LinkOrObject last = person2;
+
+        var originalCollection = Collection.with()
+            .totalItems(totalItems)
+            .items(items)
+            .current(current)
+            .first(first)
+            .last(last)
+            .build();
+
+        var copiedCollection = Collection.with(originalCollection).build();
+
+        assertThat(copiedCollection).isEqualTo(originalCollection);
+    }
+
+    @Test
+    void testCopyNull() {
+        var copyOfNull = Collection.with(null).build();
+        assertThat(copyOfNull).hasAllNullFieldsOrPropertiesExcept("type", "totalItems");
+        assertThat(copyOfNull.type()).isEqualTo(ActivityStreamObjectType.Collection);
     }
 
 }
