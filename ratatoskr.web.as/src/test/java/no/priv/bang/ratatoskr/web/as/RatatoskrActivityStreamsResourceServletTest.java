@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
@@ -255,9 +257,18 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
         assertThat(liked.id()).isEqualTo("http://localhost:8181/ratatoskr/as/liked/johnd");
         assertThat(liked.totalItems()).isEqualTo(1);
         assertThat(liked.orderedItems()).hasSize(1);
-        assertThat(liked.current()).isEqualTo(like);
-        assertThat(liked.first()).isEqualTo(like);
-        assertThat(liked.last()).isEqualTo(like);
+        assertThat(liked.current())
+            .usingRecursiveComparison()
+            .withEqualsForType(ChronoZonedDateTime::isEqual, ZonedDateTime.class)
+            .isEqualTo(like);
+        assertThat(liked.first())
+            .usingRecursiveComparison()
+            .withEqualsForType(ChronoZonedDateTime::isEqual, ZonedDateTime.class)
+            .isEqualTo(like);
+        assertThat(liked.last())
+            .usingRecursiveComparison()
+            .withEqualsForType(ChronoZonedDateTime::isEqual, ZonedDateTime.class)
+            .isEqualTo(like);
     }
 
     private MockHttpServletRequest buildGetUrl(String resource) {
