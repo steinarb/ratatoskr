@@ -40,6 +40,7 @@ import org.osgi.service.log.LogService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
@@ -60,7 +61,8 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
     public static final ObjectMapper mapper = new ObjectMapper()
         .findAndRegisterModules()
-        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, true)
+        .configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true)
+        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
 
