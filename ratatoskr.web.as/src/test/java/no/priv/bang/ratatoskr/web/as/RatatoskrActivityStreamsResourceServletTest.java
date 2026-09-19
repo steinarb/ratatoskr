@@ -61,10 +61,10 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
 
     public static final ObjectMapper mapper = new ObjectMapper()
         .findAndRegisterModules()
-        .configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true)
-        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
+        .configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false)
+        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        .setTimeZone(TimeZone.getDefault());
 
     private static DataSource datasource;
 
