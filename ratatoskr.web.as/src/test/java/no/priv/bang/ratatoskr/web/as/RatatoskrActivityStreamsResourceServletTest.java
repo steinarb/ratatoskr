@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
@@ -39,7 +40,6 @@ import org.osgi.service.log.LogService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
@@ -62,7 +62,7 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
         .findAndRegisterModules()
         .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .setTimeZone(TimeZone.getDefault());
+        .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
 
     private static DataSource datasource;
 
