@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.util.List;
 
