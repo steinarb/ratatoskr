@@ -79,7 +79,9 @@ class RatatoskrActivityStreamsResourceServletTest extends ShiroTestBase {
         runner.prepare(datasource);
 
         // Pre-populate the database with some data
+        var logservice = new MockLogService();
         var ratatoskr = new RatatoskrServiceProvider();
+        ratatoskr.setLogservice(logservice);
         ratatoskr.setDatasource(datasource);
         ratatoskr.setUseradmin(mock(UserManagementService.class));
         ratatoskr.activate(Collections.singletonMap("defaultlocale", "nb_NO"));

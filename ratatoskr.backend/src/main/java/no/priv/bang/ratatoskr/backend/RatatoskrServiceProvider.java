@@ -324,7 +324,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
                 statement.setString(2, followerUsername);
                 statement.setString(3, followedIdUrl);
                 var addedrows = statement.executeUpdate();
-                System.out.println("addedrows: " + addedrows);
+                logger.trace("Added %1 rows to follows table", addedrows);
             }
         } catch (SQLException e) {
             throw new RatatoskrException("Error adding to following list", e);
