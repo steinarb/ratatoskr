@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -64,4 +64,113 @@ public record Place(
     Collection shares
 ) implements ActivityStreamObject
 {
+    public static Builder with() {
+        return new Builder();
+    }
+
+    public static Builder with(Place source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends BuilderBase<Builder> {
+        float accuracy;
+        float altitude;
+        float latitude;
+        float longitude;
+        float radius;
+        String units;
+
+        public Builder() {
+            super();
+        }
+
+        protected Builder(Place source) {
+            super(source);
+            if (source != null) {
+                accuracy = source.accuracy();
+                altitude = source.altitude();
+                latitude = source.latitude();
+                longitude = source.longitude();
+                radius = source.radius();
+                units = source.units();
+            }
+        }
+
+        public Place build() {
+            return new Place(
+                context,
+                ActivityStreamObjectType.Place,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                accuracy,
+                altitude,
+                latitude,
+                longitude,
+                radius,
+                units,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
+            );
+        }
+
+        public Builder accuracy(float accuracy) {
+            this.accuracy = accuracy;
+            return self();
+        }
+
+        public Builder altitude(float altitude) {
+            this.altitude = altitude;
+            return self();
+        }
+
+        public Builder latitude(float latitude) {
+            this.latitude = latitude;
+            return self();
+        }
+
+        public Builder longitude(float longitude) {
+            this.longitude = longitude;
+            return self();
+        }
+
+        public Builder radius(float radius) {
+            this.radius = radius;
+            return self();
+        }
+
+        public Builder units(String units) {
+            this.units = units;
+            return self();
+        }
+    }
 }

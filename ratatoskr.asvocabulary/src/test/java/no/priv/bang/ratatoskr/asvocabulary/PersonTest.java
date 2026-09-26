@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +43,6 @@ class PersonTest {
 
         var actor = Person.with()
             .id(id)
-            .type(ActivityStreamObjectType.Person)
             .inbox(inbox)
             .outbox(outbox)
             .following(following)
@@ -87,7 +86,6 @@ class PersonTest {
 
         var actor = Person.with()
             .id(id)
-            .type(ActivityStreamObjectType.Person)
             .preferredUsername(preferredUsername)
             .name(name)
             .icon(iconUrl)
@@ -165,7 +163,6 @@ class PersonTest {
         var endpoints = EndPoints.with().sharedInbox("http://localhost:8181/ratatoskr/ap/sharedinbox").build();
         Actor object = Person.with()
             .id(id)
-            .type(ActivityStreamObjectType.Person)
             .inbox(inbox)
             .outbox(outbox)
             .following(following)

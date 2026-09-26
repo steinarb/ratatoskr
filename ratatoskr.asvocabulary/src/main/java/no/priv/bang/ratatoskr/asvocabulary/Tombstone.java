@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -59,4 +59,83 @@ public record Tombstone(
     Collection likes,
     Collection shares
 ) implements ActivityStreamObject {
+
+    public static Builder with() {
+        return new Builder();
+    }
+
+    public static Builder with(Tombstone source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends BuilderBase<Builder> {
+        String formerType;
+        ZonedDateTime deleted;
+
+        public Builder() {
+            super();
+        }
+
+        public Builder(Tombstone source) {
+            super(source);
+            if (source != null) {
+                formerType = source.formerType();
+                deleted = source.deleted();
+            }
+        }
+
+        public Tombstone build() {
+            return new Tombstone(
+                context,
+                ActivityStreamObjectType.Tombstone,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                formerType,
+                deleted,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
+            );
+        }
+
+        public Builder formerType(String formerType) {
+            this.formerType = formerType;
+            return self();
+        }
+
+        public Builder deleted(ZonedDateTime deleted) {
+            this.deleted = deleted;
+            return self();
+        }
+    }
+
 }

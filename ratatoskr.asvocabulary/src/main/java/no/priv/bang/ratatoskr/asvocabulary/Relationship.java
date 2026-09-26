@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,14 +14,12 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 
 
 public record Relationship(
@@ -69,4 +68,107 @@ public record Relationship(
     Collection likes,
     Collection shares
 ) implements ActivityStreamObject {
+
+    public static Builder with() {
+        return new Builder();
+    }
+
+    public static Builder with(Relationship source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends BuilderBase<Builder> {
+        LinkOrObject subject;
+        LinkOrObject relationship;
+        LinkOrObject object;
+        LinkOrObject instrument;
+        LinkOrObject result;
+
+        public Builder() {
+            super();
+        }
+
+        public Builder(Relationship source) {
+            super(source);
+            if (source != null) {
+                subject = source.subject();
+                relationship = source.relationship();
+                object = source.object();
+                instrument = source.instrument();
+                result = source.result();
+            }
+        }
+
+        public Relationship build() {
+            return new Relationship(
+                context,
+                ActivityStreamObjectType.Relationship,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                subject,
+                relationship,
+                object,
+                instrument,
+                result,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
+            );
+        }
+
+        public Builder subject(LinkOrObject subject) {
+            this.subject = subject;
+            return self();
+        }
+
+        public Builder relationship(LinkOrObject relationship) {
+            this.relationship = relationship;
+            return self();
+        }
+
+        public Builder object(LinkOrObject object) {
+            this.object = object;
+            return self();
+        }
+
+        public Builder instrument(LinkOrObject instrument) {
+            this.instrument = instrument;
+            return self();
+        }
+
+        public Builder result(LinkOrObject result) {
+            this.result = result;
+            return self();
+        }
+    }
+
 }

@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -324,7 +325,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
                 statement.setString(2, followerUsername);
                 statement.setString(3, followedIdUrl);
                 var addedrows = statement.executeUpdate();
-                System.out.println("addedrows: " + addedrows);
+                logger.trace("Added %1 rows to follows table", addedrows);
             }
         } catch (SQLException e) {
             throw new RatatoskrException("Error adding to following list", e);
@@ -361,7 +362,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
                 statement.setBoolean(1, true);
                 statement.setString(2, username);
                 statement.setString(3, article.id());
-                statement.setTimestamp(4, Timestamp.from(ZonedDateTime.now().toInstant()));
+                statement.setTimestamp(4, Timestamp.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant()));
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -412,9 +413,9 @@ public class RatatoskrServiceProvider implements RatatoskrService {
 
     private void updateLikesToSetIdOfCreatedLike(Connection connection, String username, Integer likeId, String localWebContext) throws SQLException {
         var id = localWebContext + "liked/" + username + "/" + Optional.ofNullable(likeId).orElse(0).toString();
-        var url_id = findExistingUrlIdOrAddUrlIfMissing(connection, id);
+        var urlId = findExistingUrlIdOrAddUrlIfMissing(connection, id);
         try(var statement = connection.prepareStatement("update likes set url_id=? where like_id=?")) {
-            statement.setInt(1, url_id);
+            statement.setInt(1, urlId);
             statement.setInt(2, likeId);
             statement.executeUpdate();
         }
@@ -688,7 +689,7 @@ public class RatatoskrServiceProvider implements RatatoskrService {
             .name(results.getString("title"))
             .content(results.getString("content"))
             .attributedTo(Link.with().href(results.getString("attributed_to")).build())
-            .published(ofNullable(results.getTimestamp("published_time")).map(published_time -> published_time.toInstant().atZone(ZoneId.systemDefault())).orElse(null))
+            .published(ofNullable(results.getTimestamp("published_time")).map(publishedTime -> publishedTime.toInstant().atZone(ZoneId.systemDefault())).orElse(null))
             .build());
     }
 

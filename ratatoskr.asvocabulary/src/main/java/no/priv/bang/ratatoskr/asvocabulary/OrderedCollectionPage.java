@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -66,4 +66,89 @@ public record OrderedCollectionPage(
     Collection shares
 ) implements OrderedCollection
 {
+
+    static Builder with() {
+        return new Builder();
+    }
+
+    static Builder with(OrderedCollectionPage source) {
+        return new Builder(source);
+    }
+
+    public static class Builder extends OrderedCollectionBuilderBase<Builder> {
+        String partOf;
+        int startIndex;
+
+        public Builder() {
+            super();
+        }
+
+        public Builder(OrderedCollectionPage source) {
+            super(source);
+            if (source != null) {
+                partOf = source.partOf();
+                startIndex = source.startIndex();
+            }
+        }
+
+        public OrderedCollectionPage build() {
+            return new OrderedCollectionPage(
+                context,
+                ActivityStreamObjectType.OrderedCollectionPage,
+                id,
+                name,
+                nameMap,
+                summary,
+                summaryMap,
+                content,
+                contentMap,
+                mediaType,
+                url,
+                attributedTo,
+                duration,
+                startTime,
+                endTime,
+                published,
+                updated,
+                attachment,
+                audience,
+                to,
+                bcc,
+                bto,
+                cc,
+                generator,
+                icon,
+                image,
+                inReplyTo,
+                location,
+                preview,
+                replies,
+                tag,
+                totalItems,
+                items,
+                current,
+                first,
+                last,
+                orderedItems,
+                partOf,
+                startIndex,
+                atomUri,
+                inReplyToAtomUri,
+                conversation,
+                likes,
+                shares
+            );
+        }
+
+        public Builder partOf(String partOf) {
+            this.partOf = partOf;
+            return self();
+        }
+
+        public Builder startIndex(int startIndex) {
+            this.startIndex = startIndex;
+            return self();
+        }
+
+    }
 }

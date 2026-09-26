@@ -1,3 +1,4 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
  * Copyright 2024-2026 Steinar Bang
  *
@@ -13,10 +14,8 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -75,48 +74,11 @@ implements Actor {
         return new Builder();
     }
 
-    public static Builder with(Actor actor) {
-        var builder = new Builder();
-        builder.id = actor.id();
-        builder.preferredUsername = actor.preferredUsername();
-        builder.name = actor.name();
-        builder.summary = actor.summary();
-        builder.icon = actor.icon();
-        return builder;
+    public static Builder with(Person source) {
+        return new Builder(source);
     }
 
-    public static class Builder {
-        private Object context = "https://www.w3.org/ns/activitystreams";
-        private ActivityStreamObjectType type = ActivityStreamObjectType.Person;
-        private String id;
-        private String name;
-        private Map<String, String> nameMap;
-        private String summary;
-        private Map<String, String> summaryMap;
-        private String content;
-        private Map<String, String> contentMap;
-        private String mediaType;
-        private Link url;
-        private LinkOrObject attributedTo;
-        private String duration;
-        private ZonedDateTime startTime;
-        private ZonedDateTime endTime;
-        private ZonedDateTime published;
-        private ZonedDateTime updated;
-        private LinkOrObject attachment;
-        private LinkOrObject audience;
-        private LinkOrObject to;
-        private LinkOrObject bcc;
-        private LinkOrObject bto;
-        private LinkOrObject cc;
-        private LinkOrObject generator;
-        private LinkOrObject icon;
-        private LinkOrObject image;
-        private LinkOrObject inReplyTo;
-        private LinkOrObject location;
-        private LinkOrObject preview;
-        private Collection replies;
-        private LinkOrObject tag;
+    public static class Builder extends BuilderBase<Builder> {
         private String inbox;
         private String outbox;
         private String following;
@@ -125,14 +87,26 @@ implements Actor {
         private String streams;
         private String preferredUsername;
         private EndPoints endpoints;
-        private Link atomUri;
-        private Link inReplyToAtomUri;
-        private String conversation;
+
+        public Builder() {
+            super();
+            context =  "https://www.w3.org/ns/activitystreams";
+        }
+
+        public Builder(Person actor) {
+            super(actor);
+            id = actor.id();
+            preferredUsername = actor.preferredUsername();
+            name = actor.name();
+            summary = actor.summary();
+            icon = actor.icon();
+            context =  "https://www.w3.org/ns/activitystreams";
+        }
 
         public Person build() {
             return new Person(
                 context,
-                type,
+                ActivityStreamObjectType.Person,
                 id,
                 name,
                 nameMap,
@@ -141,7 +115,7 @@ implements Actor {
                 content,
                 contentMap,
                 mediaType,
-                Collections.singletonList(url),
+                url,
                 attributedTo,
                 duration,
                 startTime,
@@ -173,18 +147,8 @@ implements Actor {
                 atomUri,
                 inReplyToAtomUri,
                 conversation,
-                null,
-                null);
-        }
-
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder type(ActivityStreamObjectType type) {
-            this.type = type;
-            return this;
+                likes,
+                shares);
         }
 
         public Builder inbox(String inbox) {
@@ -221,39 +185,8 @@ implements Actor {
             this.preferredUsername = preferredUsername;
             return this;
         }
-
         public Builder endpoints(EndPoints endpoints) {
             this.endpoints = endpoints;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder summary(String summary) {
-            this.summary = summary;
-            return this;
-        }
-
-        public Builder icon(String iconUrl) {
-            this.icon = Link.with().href(iconUrl).build();
-            return this;
-        }
-
-        public Builder atomUri(String uri) {
-            this.atomUri = Link.with().href(uri).build();
-            return this;
-        }
-
-        public Builder inReplyToAtomUri(String uri) {
-            this.inReplyToAtomUri = Link.with().href(uri).build();
-            return this;
-        }
-
-        public Builder conversation(String conversation) {
-            this.conversation = conversation;
             return this;
         }
 

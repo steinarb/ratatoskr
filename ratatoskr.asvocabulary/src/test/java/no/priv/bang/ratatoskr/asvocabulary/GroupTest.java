@@ -1,5 +1,6 @@
+package no.priv.bang.ratatoskr.asvocabulary;
 /*
- * Copyright 2025-2025 Steinar Bang
+ * Copyright 2025-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.ratatoskr.asvocabulary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -154,7 +154,7 @@ class GroupTest {
             .contentMap(contentMap)
             .mediaType(mediaType)
             .url(url)
-            .attributedTo(null)
+            .attributedTo((String)null)
             .duration(duration)
             .startTime(startTime)
             .endTime(endTime)
