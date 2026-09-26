@@ -145,9 +145,7 @@ public class LoginResource {
         var username = (String) subject.getPrincipal();
         var success = subject.isAuthenticated();
         var harRoleRatatoskruser = subject.hasRole(RATATOSKRUSER_ROLE);
-        var brukerLoggetInnMelding = harRoleRatatoskruser ?
-            ratatoskr.displayText("userloggedinwithaccesses", locale) :
-            ratatoskr.displayText("userloggedinwithoutaccesses", locale);
+        var brukerLoggetInnMelding =  ratatoskr.displayText(harRoleRatatoskruser ? "userloggedinwithaccesses" : "userloggedinwithoutaccesses", locale);
         var melding = success ? brukerLoggetInnMelding : ratatoskr.displayText("usernotloggedin", locale);
         var user = findUserSafely(username);
         return Loginresult.with()
